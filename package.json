@@ -1,0 +1,22 @@
+{
+  "name": "authmicroservice",
+  "version": "1.0.0",
+  "description": "Authentication : it is a process using which we can uniquely identify user on our application. This process tells as about who the user is. The general signup/login/logout flow is used to authentication a user.",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.20.0",
+    "nodemon": "^3.1.14",
+    "sequelize": "^6.37.8",
+    "sequelize-cli": "^6.6.5"
+  }
+}
