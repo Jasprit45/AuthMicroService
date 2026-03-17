@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
   });
 
+  //tiggers
   User.beforeCreate((user)=>{
     const encryptedPassword = bcrypt.hashSync(user.password,SALT);
     user.password  = encryptedPassword;

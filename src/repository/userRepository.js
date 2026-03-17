@@ -36,6 +36,18 @@ class UserRepository {
             throw error;
         }
     }
+    async getById(id){
+        try {
+            const user = await User.findByPk(id);
+            if(!user) throw {error: "User not found"};
+
+            return user.dataValues;
+
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
    
 }
 
