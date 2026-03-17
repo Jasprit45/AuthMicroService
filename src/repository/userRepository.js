@@ -25,17 +25,11 @@ class UserRepository {
     }
     async getByEmail(email){
         try {
-            const user = await User.findOne({
-                where:
-                {
-                    email: email,
-                }
-            });
-            if(!user) {
-                throw {error: "User not found"};
-            }
-            
-            return user;
+            const user = await User.findOne({ where: { email: email}});
+            if(!user) throw {error: "User not found"};
+
+            // console.log(user);
+            return user.dataValues;
 
         } catch (error) {
             console.log("Something went wrong in userRepository");

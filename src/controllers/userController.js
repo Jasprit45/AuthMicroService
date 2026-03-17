@@ -26,8 +26,29 @@ const signUp = async (req,res) => {
         });
     }
 }
+const signIn = async (req,res) => {
+    try {
+        const token = await userService.signIn(req.body.email,req.body.password);
+        return res.status(200).json({
+            success: true,
+            message:"token created",
+            token: token,
+            error: {}
+        });
+        
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"User not signed in",
+            token: {},
+            error: error
+        });
+    }
+}
 
 
 module.exports = {
     signUp,
+    signIn,
 }
