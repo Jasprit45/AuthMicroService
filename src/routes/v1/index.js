@@ -1,19 +1,27 @@
 const express = require('express');
 
-const {signUp,signIn,isAuthenticated} = require('../../controllers/userController');
+const userController = require('../../controllers/userController');
 const {AuthRequestValidators} = require('../../middlewares/index');
 
 const router  = express.Router();
 
 router.post('/signup',
     AuthRequestValidators.validateSignup,
-    signUp);
+    userController.signUp);
 
 router.get('/login',
     AuthRequestValidators.validateSignin,
-     signIn);
-     
-router.get('/isauthenticated',
-     isAuthenticated);
+    userController.signIn);
+
+router.get('/isAuthenticated',
+    userController.isAuthenticated);
+
+router.get('/isAdmin',
+    AuthRequestValidators.validateIsAdmin,
+    userController.isAdmin);
+    
+router.post('/makeAdmin',
+    AuthRequestValidators.validateMakeAdmin,
+    userController.makeAdmin);
 
 module.exports = router;

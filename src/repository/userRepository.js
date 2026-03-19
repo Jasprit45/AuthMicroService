@@ -29,7 +29,7 @@ class UserRepository {
             if(!user) throw {error: "User not found"};
 
             // console.log(user);
-            return user.dataValues;
+            return user.dataValues; //return plain json object
 
         } catch (error) {
             console.log("Something went wrong in userRepository");
@@ -41,7 +41,7 @@ class UserRepository {
             const user = await User.findByPk(id);
             if(!user) throw {error: "User not found"};
 
-            return user.dataValues;
+            return user; //return sequelize object 
 
         } catch (error) {
             console.log("Something went wrong in userRepository");

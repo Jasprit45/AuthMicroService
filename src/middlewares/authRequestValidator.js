@@ -20,9 +20,33 @@ const validateSignin = (req,res,next) => {
     }
     next();
 }
+const validateIsAdmin = (req,res,next) => {
+    if(!req.body.userId){
+        return res.status(400).json({
+            success: false,
+            data : {},
+            message: "missing input",
+            error: "userId is missing"
+        });
+    }
+    next();
+}
+const validateMakeAdmin = (req,res,next) => {
+    if(!req.body.userId){
+        return res.status(400).json({
+            success: false,
+            data : {},
+            message: "missing input",
+            error: "userId is missing"
+        });
+    }
+    next();
+}
 
 
 module.exports = {
     validateSignin,
-    validateSignup
+    validateSignup,
+    validateIsAdmin,
+    validateMakeAdmin
 }
