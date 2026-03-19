@@ -7,3 +7,14 @@ Authentication :- mobile no., email, token based authentication (JWT)
 JWT -> json web token. 
 
 To generate the JWT token, we actually use the client/user credential. Hence no need to save the token in server.
+
+
+
+RBAC(Role-Based Access Control) :-> We’re basically deciding who can do what in your system
+
+id   Role
+1 -  Admin
+2 -  Manager
+3 -  Customer
+
+await u1.hasRoles(1) return boolean of is Customer u1 is admin or not

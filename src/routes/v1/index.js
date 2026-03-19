@@ -12,6 +12,7 @@ router.post('/signup',
 router.get('/login',
     AuthRequestValidators.validateSignin,
      signIn);
+     
 router.get('/isauthenticated',
      isAuthenticated);
 
