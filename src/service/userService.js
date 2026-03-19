@@ -2,7 +2,7 @@ const UserRepository  = require('../repository/userRepository');
 const RoleRepository = require('../repository/roleRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const {JWT_KEY} = require('../config/serverConfig');
+const {JWT_KEY,SALT} = require('../config/serverConfig');
 
 
 class UserService {
@@ -85,6 +85,33 @@ class UserService {
             throw error;
         }
     }
+
+    
+
+    async updatePassword(token, oldPassword, newPassword){
+        try {
+            // is user is authenticated
+            const userId = await this.isAuthenticated(token);
+
+            //get the user
+            const user  = await this.userRepository.getById(userId); //sequelize object
+            
+
+            //compare old-password
+            const isMatch = this.comparePassword(oldPassword,user.dataValues.password);
+            if(!isMatch) throw {error: "OLD PASSWORD NOT MATCHED"};
+            
+            //encrypting password before update 
+            user.dataValues.password = bcrypt.hashSync(newPassword,SALT);
+
+            await user.save();  //save in userdb
+            return user; 
+
+        } catch (error) {
+            console.log("Something went wrong in userService");
+            throw error;
+        }
+    }
     
     async isAdmin(userId){
         try {
@@ -109,11 +136,38 @@ class UserService {
             if(!adminRole) throw {error: "Admin is not a Role"};
 
             // console.log(typeof user.addRole);
-
             await user.addRole(adminRole);
+            return true;
 
-           
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
+    async isManager(userId){
+        try {
+            const user = await this.userRepository.getById(userId); //sequelize object 
+            const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
 
+            const res = await user.hasRole(managerRole);
+            
+            return res;
+            
+        } catch (error) {
+            console.log("Something went wrong in user service layer");
+            throw error;
+        }
+    }
+    async makeManager(userId){
+        try {
+            const user = await this.userRepository.getById(userId); //sequelize object 
+            if(!user) throw {error: "Not a valid user"};
+
+            const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
+            if(!managerRole) throw {error: "Admin is not a Role"};
+
+            // console.log(typeof user.addRole);
+            await user.addRole(managerRole);
             return true;
 
         } catch (error) {

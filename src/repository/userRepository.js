@@ -41,7 +41,7 @@ class UserRepository {
             const user = await User.findByPk(id);
             if(!user) throw {error: "User not found"};
 
-            return user; //return sequelize object 
+            return user; //return sequelize object
 
         } catch (error) {
             console.log("Something went wrong in userRepository");

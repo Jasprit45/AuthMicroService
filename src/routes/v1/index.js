@@ -13,15 +13,29 @@ router.get('/login',
     AuthRequestValidators.validateSignin,
     userController.signIn);
 
-router.get('/isAuthenticated',
+router.get('/is-authenticated',
+    AuthRequestValidators.validateAthentication,
     userController.isAuthenticated);
 
-router.get('/isAdmin',
-    AuthRequestValidators.validateIsAdmin,
+router.get('/is-admin',
+    AuthRequestValidators.validateRole,
     userController.isAdmin);
     
-router.post('/makeAdmin',
-    AuthRequestValidators.validateMakeAdmin,
+router.post('/make-admin',
+    AuthRequestValidators.validateRole,
     userController.makeAdmin);
+router.get('/is-manager',
+    AuthRequestValidators.validateRole,
+    userController.isManager);
+
+router.post('/make-manager',
+    AuthRequestValidators.validateRole,
+    userController.makeManager);
+
+router.patch('/change-password',
+    AuthRequestValidators.validateAthentication,
+    AuthRequestValidators.validatePasswordChange,
+    userController.changePassword
+)
 
 module.exports = router;
