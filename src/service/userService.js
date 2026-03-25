@@ -33,8 +33,8 @@ class UserService {
 
     verifyToken(token){
         try {
-            const isvalid = jwt.verify(token,JWT_KEY);
-            return isvalid;
+            const decoded = jwt.verify(token,JWT_KEY);
+            return decoded;
         } catch (error) {
             throw error;
         }
@@ -175,6 +175,21 @@ class UserService {
             throw error;
         }
     }
+    // async logout(token){
+    //     try {
+    //         const userId = await this.isAuthenticated(token); 
+
+
+            
+            
+
+    //         return true;
+
+    //     } catch (error) {
+    //         console.log("Something went wrong in user service layer", error);
+    //         throw error;
+    //     }
+    // }
 }
 
 module.exports = UserService;

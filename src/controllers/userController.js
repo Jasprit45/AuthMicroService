@@ -183,6 +183,26 @@ const changePassword = async (req,res) => {
         });
     }
 }
+// const logout = async (req,res) => {
+//     try {
+//         const token = req.headers['x-access-token'];
+//         const response = await this.userService.logout(token);
+//         return res.status(200).json({
+//             success: true,
+//             message:"user is logged out",
+//             data: response,
+//             error: {}
+//         });
+//     } catch (error) {
+//         console.log("Something went wrong in user controller layer");
+//         return res.status(500).json({
+//             success: false,
+//             message:"Something went wrong",
+//             data: {},
+//             error: error,
+//         });
+//     }
+// }
 
 
 module.exports = {
@@ -193,5 +213,6 @@ module.exports = {
     makeAdmin,
     isManager,
     makeManager,
-    changePassword
+    changePassword,
+    // logout
 }

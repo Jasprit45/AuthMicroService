@@ -35,7 +35,10 @@ router.post('/make-manager',
 router.patch('/change-password',
     AuthRequestValidators.validateAthentication,
     AuthRequestValidators.validatePasswordChange,
-    userController.changePassword
-)
+    userController.changePassword);
+
+// router.get('/logout',
+//     AuthRequestValidators.validateAthentication,
+//     userController.logout);
 
 module.exports = router;
