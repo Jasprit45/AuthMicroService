@@ -1,8 +1,10 @@
 const UserRepository  = require('../repository/userRepository');
 const RoleRepository = require('../repository/roleRepository');
+const TokenRepository = require('../repository/tokenRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const {JWT_KEY,SALT} = require('../config/serverConfig');
+const crypto = require('crypto');
+const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET} = require('../config/serverConfig');
 
 
 class UserService {
@@ -10,6 +12,7 @@ class UserService {
     constructor() {
         this.userRepository = new UserRepository();
         this.roleRepository = new RoleRepository();
+        this.tokenRepository = new TokenRepository();
     }
 
     async signUp(data) {
@@ -22,18 +25,26 @@ class UserService {
         }
     }
 
-    createToken(user) {
+    createAccessToken(user) {
         try {
-            const token = jwt.sign(user,JWT_KEY,{expiresIn: '1d'});
+            const token = jwt.sign({id:user.id},JWT_ACCESS_KEY,{expiresIn: '15m'});
+            return token;
+        } catch (error) {
+            throw error;
+        }
+    }
+    createRefreshToken(user) {
+        try {
+            const token = jwt.sign({id:user.id},JWT_REFRESH_KEY,{expiresIn: '15d'});
             return token;
         } catch (error) {
             throw error;
         }
     }
 
-    verifyToken(token){
+    verifyToken(accessToken){
         try {
-            const decoded = jwt.verify(token,JWT_KEY);
+            const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
             return decoded;
         } catch (error) {
             throw error;
@@ -50,6 +61,10 @@ class UserService {
         }
     }
 
+    hashToken(token) {
+        return crypto.createHash("sha256").update(token + TOKEN_SECRET).digest('hex');
+    }
+
     async signIn(email,plainPassword){
         try {
             const user = await this.userRepository.getByEmail(email);  // get a json object 
@@ -60,17 +75,32 @@ class UserService {
             
             if(!isMatch) throw {error:"Password Not Matched"};
 
-            const token = this.createToken(user);
-            return token;
+            const accessToken = this.createAccessToken(user);
+            const refreshToken = this.createRefreshToken(user);
+
+            const hashedToken = this.hashToken(refreshToken);
+
+
+
+            await this.tokenRepository.create({
+                userId : user.id,
+                token : hashedToken,
+                expiresAt : new Date(Date.now() + 15*24*60*60*1000)
+            });
+
+            return {
+                accessToken:accessToken,
+                refreshToken:refreshToken
+            };
         } catch (error) {
             console.log("Something went wrong in user service layer");
             throw error;
         }
     }
 
-    async isAuthenticated(token) {
+    async isAuthenticated(accessToken) {
         try {
-            const response = this.verifyToken(token);
+            const response = this.verifyToken(accessToken);
 
             if(!response) throw {error:"Invalid Token!!"};
 

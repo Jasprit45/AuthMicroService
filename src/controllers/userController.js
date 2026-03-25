@@ -32,7 +32,7 @@ const signIn = async (req,res) => {
         return res.status(200).json({
             success: true,
             message:"token created",
-            token: token,
+            token,
             error: {}
         });
 
@@ -41,7 +41,6 @@ const signIn = async (req,res) => {
         return res.status(500).json({
             success: false,
             message:"User not signed in",
-            token: {},
             error: error
         });
     }

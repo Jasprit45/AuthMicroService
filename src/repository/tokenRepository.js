@@ -6,7 +6,7 @@ class TokenRepository {
             const res = await Refresh_tokens.create(data);
             return res;
         } catch (error) {
-            console.log("Something went wrong in token repository")
+            console.log("Something went wrong in token repository");
             console.log(error);
             throw error;
         }
@@ -15,12 +15,12 @@ class TokenRepository {
         try {
             const res = await Refresh_tokens.findOne({
                 where : {
-                    userId:userId
+                    userId
                 }
             });
             return res;
         } catch (error) {
-            console.log("Something went wrong in token repository")
+            console.log("Something went wrong in token repository");
             console.log(error);
             throw error;
         }
@@ -29,12 +29,12 @@ class TokenRepository {
         try {
             const res = await Refresh_tokens.findOne({
                 where : {
-                    token:token
+                    token
                 }
             });
             return res;
         } catch (error) {
-            console.log("Something went wrong in token repository")
+            console.log("Something went wrong in token repository");
             console.log(error);
             throw error;
         }
@@ -43,12 +43,12 @@ class TokenRepository {
         try {
             await Refresh_tokens.destroy({
                 where : {
-                    userId:userId
+                    userId
                 }
             });
             return true;
         } catch (error) {
-            console.log("Something went wrong in token repository")
+            console.log("Something went wrong in token repository");
             console.log(error);
             throw error;
         }
@@ -57,12 +57,12 @@ class TokenRepository {
         try {
             await Refresh_tokens.destroy({
                 where : {
-                    token:token
+                    token
                 }
             });
             return true;
         } catch (error) {
-            console.log("Something went wrong in token repository")
+            console.log("Something went wrong in token repository");
             console.log(error);
             throw error;
         }
