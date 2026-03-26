@@ -12,9 +12,7 @@ To generate the JWT token, we actually use the client/user credential. Hence no 
 
 RBAC(Role-Based Access Control) :-> We’re basically deciding who can do what in your system
 
-id   Role
-1 -  Admin
-2 -  Manager
-3 -  Customer
+Role = ADMIN, MANAGER, USER
 
-await u1.hasRoles(1) return boolean of is Customer u1 is admin or not
+A admin can only the role of the user. ex. from USER -> ADMIN 
+

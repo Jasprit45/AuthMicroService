@@ -27,7 +27,8 @@ class UserService {
     createAccessToken(user) {
         try {
             if(!user.role) user.role = 'USER';
-            const token = jwt.sign({id:user.id, role:user.role},JWT_ACCESS_KEY,{expiresIn: '15m'});
+            console.log("ROLE ---- ",user.role);
+            const token = jwt.sign({id:user.id, role:user.role},JWT_ACCESS_KEY,{expiresIn: '1d'});
             return token;
         } catch (error) {
             throw error;
@@ -133,8 +134,12 @@ class UserService {
                 expiresAt : new Date(Date.now() + 15*24*60*60*1000)
             });
 
-            if(!user.role) user.role = 'USER'; // for temp period
-            await user.save();
+            if(!user.role){
+                user.role = 'USER'; // for temp period
+                await user.save();
+            } 
+
+            //TODO : use rate-limiter and limit one user can only login from 3 diffrent device/tabs.
 
             return {
                 accessToken:accessToken,
@@ -150,12 +155,10 @@ class UserService {
 
     async updatePassword(userId, oldPassword, newPassword){
         try {
-            // is user is authenticated
 
             //get the user
             // console.log(userId);
             const user  = await this.userRepository.getById(userId); //sequelize object
-            
 
             //compare old-password
             const isMatch = this.comparePassword(oldPassword,user.dataValues.password);
@@ -189,23 +192,22 @@ class UserService {
     //         throw error;
     //     }
     // }
-    // async makeAdmin(userId){
-    //     try {
-    //         const user = await this.userRepository.getById(userId); //sequelize object 
-    //         if(!user) throw {error: "Not a valid user"};
+    async makeAdmin(userId ,guestEmail){
+        try {
+            const user = await this.userRepository.getById(userId); //sequelize object 
+            if(!user) throw {error: "Not a valid user"};
 
-    //         const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
-    //         if(!adminRole) throw {error: "Admin is not a Role"};
 
-    //         // console.log(typeof user.addRole);
-    //         await user.addRole(adminRole);
-    //         return true;
+            const res = await this.userRepository.updateRoleToAdmin(guestEmail);
 
-    //     } catch (error) {
-    //         console.log("Something went wrong in user service layer", error);
-    //         throw error;
-    //     }
-    // }
+           
+            return res;
+
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
     // async isManager(userId){
     //     try {
     //         const user = await this.userRepository.getById(userId); //sequelize object 

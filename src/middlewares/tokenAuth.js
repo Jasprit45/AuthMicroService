@@ -9,9 +9,9 @@ const isAuthenticated = (req,res,next) => {
         const response = jwt.verify(accessToken,JWT_ACCESS_KEY);
         req.body.userId =  response.id;
         req.body.userRole = response.role;
-        console.log(response.id);
-        console.log(response.role);
-        console.log(response);
+        // console.log(response.id);
+        // console.log(response.role);
+        // console.log(response);
         // console.log("Working",response.id);
 
         next();
@@ -26,6 +26,16 @@ const isAuthenticated = (req,res,next) => {
         });
     }
 }
+const isAdmin = (req,res,next) => { 
+    // console.log(req.body.userrole); 
+    if(req.body.userRole !== 'ADMIN'){
+        res.status(403).json({
+            message: "Access denied. Admin only."
+        });
+    }
+    next();
+}
+
 const isRefreshToken = (req,res,next) => {  
     try {
         const refreshToken = req.headers['refresh-token'];
@@ -49,7 +59,9 @@ const isRefreshToken = (req,res,next) => {
 }
 
 
+
 module.exports = {
     isAuthenticated,
     isRefreshToken,
+    isAdmin,
 }

@@ -48,11 +48,24 @@ const validatePasswordChange = (req,res,next) => {
     }
     next();
 }
+const validateRoleChange = (req,res,next) => {
+    if( !req.body.email){
+        return res.status(401).json({
+            success: false,
+            data : {},
+            message: "Email of user is required to change the role",
+            error: "Email  missing"
+        });
+    }
+    next();
+}
+
 
 
 
 module.exports = {
     validateSignin,
     validateSignup,
-    validatePasswordChange
+    validatePasswordChange,
+    validateRoleChange
 }

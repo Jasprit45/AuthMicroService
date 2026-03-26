@@ -26,13 +26,16 @@ router.get('/isAuthenticated',
 );
 
 
+router.patch('/admin/make-admin',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isAdmin,
+    AuthRequestValidators.validateRoleChange,
+    userController.makeAdmin);
+
 // router.get('/is-admin',
 //     AuthRequestValidators.validateRole,
 //     userController.isAdmin);
     
-// router.post('/make-admin',
-//     AuthRequestValidators.validateRole,
-//     userController.makeAdmin);
 // router.get('/is-manager',
 //     AuthRequestValidators.validateRole,
 //     userController.isManager);
