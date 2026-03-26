@@ -15,6 +15,7 @@ class UserService {
 
     async signUp(data) {
         try {
+            if(!data.role) data.role = 'USER';
             const user = await this.userRepository.create(data);
             return user;
         } catch (error) {
@@ -25,7 +26,8 @@ class UserService {
 
     createAccessToken(user) {
         try {
-            const token = jwt.sign({id:user.id},JWT_ACCESS_KEY,{expiresIn: '15m'});
+            if(!user.role) user.role = 'USER';
+            const token = jwt.sign({id:user.id, role:user.role},JWT_ACCESS_KEY,{expiresIn: '15m'});
             return token;
         } catch (error) {
             throw error;
@@ -130,6 +132,9 @@ class UserService {
                 token : hashedToken,
                 expiresAt : new Date(Date.now() + 15*24*60*60*1000)
             });
+
+            if(!user.role) user.role = 'USER'; // for temp period
+            await user.save();
 
             return {
                 accessToken:accessToken,

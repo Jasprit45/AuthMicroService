@@ -50,7 +50,6 @@ const signIn = async (req,res) => {
 const refreshToken = async (req,res) => {
     try {
         const response = await userService.assignNewAccessToken(req.body.refreshToken, req.body.userId);
-        // console.log(res.accessToken , res.refreshToken);
         return res.status(200).json({
             success: true,
             message:"token created",
@@ -207,6 +206,22 @@ const logout = async (req,res) => {
         });
     }
 }
+const dummy = async (req,res) => {
+    try {
+        return res.status(200).json({
+            success: true,
+            message:"DONE",
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 module.exports = {
@@ -218,5 +233,6 @@ module.exports = {
     // isManager,
     // makeManager,
     changePassword,
-    logout
+    logout,
+    dummy
 }

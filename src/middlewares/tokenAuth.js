@@ -8,6 +8,10 @@ const isAuthenticated = (req,res,next) => {
 
         const response = jwt.verify(accessToken,JWT_ACCESS_KEY);
         req.body.userId =  response.id;
+        req.body.userRole = response.role;
+        console.log(response.id);
+        console.log(response.role);
+        console.log(response);
         // console.log("Working",response.id);
 
         next();
@@ -33,6 +37,7 @@ const isRefreshToken = (req,res,next) => {
         next();
     } catch (error) {
         if(error?.expired) {
+            //TODO : i will use cron-job to schedule the deletion of expired tokens from db
             return res.status(401).json({
                 message: "Token is expired"
             });

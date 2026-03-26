@@ -20,6 +20,11 @@ router.post('/refresh-token',
     userController.refreshToken
 );
 
+router.get('/isAuthenticated',
+    TokenAuth.isAuthenticated,
+    userController.dummy
+);
+
 
 // router.get('/is-admin',
 //     AuthRequestValidators.validateRole,
