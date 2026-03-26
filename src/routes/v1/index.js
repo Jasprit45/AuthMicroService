@@ -30,19 +30,31 @@ router.patch('/admin/make-admin',
     TokenAuth.isAuthenticated,
     TokenAuth.isAdmin,
     AuthRequestValidators.validateRoleChange,
-    userController.makeAdmin);
+    userController.makeAdmin
+);
 
-// router.get('/is-admin',
-//     AuthRequestValidators.validateRole,
-//     userController.isAdmin);
-    
-// router.get('/is-manager',
-//     AuthRequestValidators.validateRole,
-//     userController.isManager);
+router.get('/is-admin',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isAdmin,
+    (req,res)=> {
+        res.json({message: "Welcome Admin!!!"});
+    }
+);
 
-// router.post('/make-manager',
-//     AuthRequestValidators.validateRole,
-//     userController.makeManager);
+router.get('/is-manager',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isManager,
+    (req,res)=> {
+        res.json({message: "Welcome Manager!!!"});
+    }
+);
+
+router.patch('/admin/make-manager',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isAdmin,
+    AuthRequestValidators.validateRoleChange,
+    userController.makeManager
+);
 
 router.patch('/change-password',
     TokenAuth.isAuthenticated,

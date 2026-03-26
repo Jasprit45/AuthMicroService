@@ -176,69 +176,31 @@ class UserService {
         }
     }
 
-    //todos
-    
-    // async isAdmin(userId){
-    //     try {
-    //         const user = await this.userRepository.getById(userId); //sequelize object 
-    //         const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
-
-    //         const res = await user.hasRole(adminRole);
-            
-    //         return res;
-            
-    //     } catch (error) {
-    //         console.log("Something went wrong in user service layer");
-    //         throw error;
-    //     }
-    // }
     async makeAdmin(userId ,guestEmail){
         try {
             const user = await this.userRepository.getById(userId); //sequelize object 
             if(!user) throw {error: "Not a valid user"};
 
-
             const res = await this.userRepository.updateRoleToAdmin(guestEmail);
-
-           
             return res;
-
         } catch (error) {
             console.log("Something went wrong in user service layer", error);
             throw error;
         }
     }
-    // async isManager(userId){
-    //     try {
-    //         const user = await this.userRepository.getById(userId); //sequelize object 
-    //         const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
+    async makeManager(userId ,guestEmail){
+        try {
+            const user = await this.userRepository.getById(userId); //sequelize object 
+            if(!user) throw {error: "Not a valid user"};
 
-    //         const res = await user.hasRole(managerRole);
-            
-    //         return res;
-            
-    //     } catch (error) {
-    //         console.log("Something went wrong in user service layer");
-    //         throw error;
-    //     }
-    // }
-    // async makeManager(userId){
-    //     try {
-    //         const user = await this.userRepository.getById(userId); //sequelize object 
-    //         if(!user) throw {error: "Not a valid user"};
-
-    //         const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
-    //         if(!managerRole) throw {error: "Admin is not a Role"};
-
-    //         // console.log(typeof user.addRole);
-    //         await user.addRole(managerRole);
-    //         return true;
-
-    //     } catch (error) {
-    //         console.log("Something went wrong in user service layer", error);
-    //         throw error;
-    //     }
-    // }
+            const res = await this.userRepository.updateRoleToManager(guestEmail);
+            return res;
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
+   
     async logout(refreshToken){
         try {
             //check the refresh token

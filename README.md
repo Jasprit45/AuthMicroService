@@ -14,5 +14,5 @@ RBAC(Role-Based Access Control) :-> We’re basically deciding who can do what i
 
 Role = ADMIN, MANAGER, USER
 
-A admin can only the role of the user. ex. from USER -> ADMIN 
+A admin can only change the role of the user. ex. from USER -> ADMIN 
 

@@ -11,14 +11,19 @@ class UserRepository {
         }
     }
     async updateRoleToAdmin(guestEmail){
-        try {
-            // const user = await User.findOne({
-            //                 where: {
-            //                     id:userId
-            //                 }
-            //             });
-                        
+        try {       
             const user = await User.update({ role: 'ADMIN' } , {where: {email:guestEmail}});
+            if(!user) throw new Error("User not found!!");
+
+            return user;
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
+    async updateRoleToManager(guestEmail){
+        try {       
+            const user = await User.update({ role: 'MANAGER' } , {where: {email:guestEmail}});
             if(!user) throw new Error("User not found!!");
 
             return user;

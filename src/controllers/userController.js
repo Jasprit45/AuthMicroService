@@ -68,34 +68,6 @@ const refreshToken = async (req,res) => {
     }
 }
 
-// const isAdmin = async (req,res) => {
-//     try {
-//         const response = await userService.isAdmin(req.body.userId);
-//         if(!response) {
-//             return res.status(200).json({
-//             success: true,
-//             message:"user is NOT an admin",
-//             data: response,
-//             error: {}
-//             });
-//         }
-//         return res.status(200).json({
-//             success: true,
-//             message:"user is admin",
-//             data: response,
-//             error: {}
-//         });
-//     } catch (error) {
-//         console.log("Something went wrong in user controller layer");
-//         return res.status(500).json({
-//             success: false,
-//             message:"Something went wrong",
-//             data: {},
-//             error: error,
-//         });
-//     }
-// }
-
 const makeAdmin = async (req,res) => {
     try {
         const response = await userService.makeAdmin(req.body.userId, req.body.email);
@@ -115,53 +87,27 @@ const makeAdmin = async (req,res) => {
         });
     }
 }
-// const isManager = async (req,res) => {
-//     try {
-//         const response = await userService.isManager(req.body.userId);
-//         if(!response) {
-//             return res.status(200).json({
-//             success: true,
-//             message:"user is NOT a Manager",
-//             data: response,
-//             error: {}
-//             });
-//         }
-//         return res.status(200).json({
-//             success: true,
-//             message:"user is a Manager",
-//             data: response,
-//             error: {}
-//         });
-//     } catch (error) {
-//         console.log("Something went wrong in user controller layer");
-//         return res.status(500).json({
-//             success: false,
-//             message:"Something went wrong",
-//             data: {},
-//             error: error,
-//         });
-//     }
-// }
+const makeManager = async (req,res) => {
+    try {
+        const response = await userService.makeManager(req.body.userId, req.body.email);
+        return res.status(200).json({
+            success: true,
+            message:`${req.body.email} is now a Manager`,
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            data: {},
+            error: error,
+        });
+    }
+}
 
-// const makeManager = async (req,res) => {
-//     try {
-//         const response = await userService.makeManager(req.body.userId);
-//         return res.status(200).json({
-//             success: true,
-//             message:"user is now a manager",
-//             data: response,
-//             error: {}
-//         });
-//     } catch (error) {
-//         console.log("Something went wrong in user controller layer");
-//         return res.status(500).json({
-//             success: false,
-//             message:"Something went wrong",
-//             data: {},
-//             error: error,
-//         });
-//     }
-// }
+
 const changePassword = async (req,res) => {
     try {
         const response = await userService.updatePassword( req.body.userId , req.body.oldPassword, req.body.newPassword);
@@ -228,10 +174,8 @@ module.exports = {
     signUp,
     signIn,
     refreshToken,
-    // isAdmin,
     makeAdmin,
-    // isManager,
-    // makeManager,
+    makeManager,
     changePassword,
     logout,
     dummy

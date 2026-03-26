@@ -35,6 +35,15 @@ const isAdmin = (req,res,next) => {
     }
     next();
 }
+const isManager = (req,res,next) => { 
+    // console.log(req.body.userrole); 
+    if(req.body.userRole !== 'MANAGER'){
+        res.status(403).json({
+            message: "Access denied. Manager only."
+        });
+    }
+    next();
+}
 
 const isRefreshToken = (req,res,next) => {  
     try {
@@ -64,4 +73,5 @@ module.exports = {
     isAuthenticated,
     isRefreshToken,
     isAdmin,
+    isManager,
 }
