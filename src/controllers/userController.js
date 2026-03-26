@@ -26,6 +26,7 @@ const signUp = async (req,res) => {
         });
     }
 }
+
 const signIn = async (req,res) => {
     try {
         const token = await userService.signIn(req.body.email,req.body.password);
@@ -33,6 +34,28 @@ const signIn = async (req,res) => {
             success: true,
             message:"token created",
             token,
+            error: {}
+        });
+
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"User not signed in",
+            error: error
+        });
+    }
+}
+
+const refreshToken = async (req,res) => {
+    try {
+        const response = await userService.assignNewAccessToken(req.body.refreshToken, req.body.userId);
+        // console.log(res.accessToken , res.refreshToken);
+        return res.status(200).json({
+            success: true,
+            message:"token created",
+            refreshToken : response.refreshToken,
+            accessToken : response.accessToken,
             error: {}
         });
 
@@ -189,7 +212,7 @@ const logout = async (req,res) => {
 module.exports = {
     signUp,
     signIn,
-    
+    refreshToken,
     // isAdmin,
     // makeAdmin,
     // isManager,

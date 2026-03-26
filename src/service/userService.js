@@ -40,21 +40,60 @@ class UserService {
         }
     }
 
-    // verifyToken(accessToken){
-    //     try {
-    //         const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
-    //         return decoded;
-    //     } catch (error) {
-    //          if (error.name === "TokenExpiredError") {
-    //             return { expired: true };
-    //         }
+    async verifyRefreshToken(token){
+        try {
+            const decoded = jwt.verify(token,JWT_REFRESH_KEY);
+            return decoded;
+        } catch (error) {
+             if (error.name === "TokenExpiredError") {
+                return { expired: true };
+            }
 
-    //         if (error.name === "JsonWebTokenError") {
-    //             return { invalid: true };
-    //         }
-    //         throw error;
-    //     }
-    // }
+            if (error.name === "JsonWebTokenError") {
+                return { invalid: true };
+            }
+            throw error;
+        }
+    }
+
+    async assignNewAccessToken(refreshToken,userId){
+        try {
+            const user = await this.userRepository.getById(userId); //sequelize object
+            if(!user) return new Error("This account has been deleted");
+
+            //match refresh token
+
+            const hashedRefreshToken = this.hashToken(refreshToken);
+
+            //search in db if it is abilable or not ?
+
+            // console.log("hashedRefreshToken :" ,hashedRefreshToken );
+
+            const res = await this.tokenRepository.getByToken(hashedRefreshToken);
+
+            // console.log(res.dataValues);
+
+            if(!res) return new Error("Sign in required!");
+
+            const newAccessToken = this.createAccessToken(user.dataValues);
+
+            // console.log(newAccessToken);
+
+            return {
+                accessToken:newAccessToken,
+                refreshToken:refreshToken,
+            };
+        } catch (error) {
+             if (error.name === "TokenExpiredError") {
+                return { expired: true };
+            }
+
+            if (error.name === "JsonWebTokenError") {
+                return { invalid: true };
+            }
+            throw error;
+        }
+    }
 
     comparePassword(plainPassword,encryptedPassword){
         try {
@@ -196,6 +235,8 @@ class UserService {
     async logout(refreshToken){
         try {
             //check the refresh token
+            await this.verifyRefreshToken(refreshToken); //await to hold and check the token
+
             const hashedToken = this.hashToken(refreshToken);
 
             //then delete the token from db

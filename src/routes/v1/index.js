@@ -15,6 +15,11 @@ router.get('/login',
     userController.signIn
 );
 
+router.post('/refresh-token',
+    TokenAuth.isRefreshToken,
+    userController.refreshToken
+);
+
 
 // router.get('/is-admin',
 //     AuthRequestValidators.validateRole,
