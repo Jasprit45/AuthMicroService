@@ -193,21 +193,21 @@ class UserService {
     //         throw error;
     //     }
     // }
-    // async logout(token){
-    //     try {
-    //         const userId = await this.isAuthenticated(token); 
+    async logout(refreshToken){
+        try {
+            //check the refresh token
+            const hashedToken = this.hashToken(refreshToken);
 
+            //then delete the token from db
+            const res = await this.tokenRepository.deleteByToken(hashedToken);
+             
+            return res;
 
-            
-            
-
-    //         return true;
-
-    //     } catch (error) {
-    //         console.log("Something went wrong in user service layer", error);
-    //         throw error;
-    //     }
-    // }
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = UserService;

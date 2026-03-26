@@ -55,12 +55,15 @@ class TokenRepository {
     }
     async deleteByToken(token){
         try {
-            await Refresh_tokens.destroy({
-                where : {
-                    token
-                }
-            });
-            return true;
+            const res = await Refresh_tokens.destroy({
+                            where : {
+                                token
+                            }
+                        });
+            return {
+                success:true,
+                message: res? "Successfully logged out" : "Already logged out"
+            };
         } catch (error) {
             console.log("Something went wrong in token repository");
             console.log(error);

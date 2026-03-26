@@ -7,11 +7,13 @@ const router  = express.Router();
 
 router.post('/signup',
     AuthRequestValidators.validateSignup,
-    userController.signUp);
+    userController.signUp
+);
 
 router.get('/login',
     AuthRequestValidators.validateSignin,
-    userController.signIn);
+    userController.signIn
+);
 
 
 // router.get('/is-admin',
@@ -32,10 +34,12 @@ router.get('/login',
 router.patch('/change-password',
     TokenAuth.isAuthenticated,
     AuthRequestValidators.validatePasswordChange,
-    userController.changePassword);
+    userController.changePassword
+);
 
-// router.get('/logout',
-//     AuthRequestValidators.validateAthentication,
-//     userController.logout);
+router.get('/logout',
+    TokenAuth.isAuthenticated,
+    userController.logout
+);
 
 module.exports = router;

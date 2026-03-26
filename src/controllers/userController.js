@@ -159,26 +159,31 @@ const changePassword = async (req,res) => {
         });
     }
 }
-// const logout = async (req,res) => {
-//     try {
-//         const token = req.headers['x-access-token'];
-//         const response = await this.userService.logout(token);
-//         return res.status(200).json({
-//             success: true,
-//             message:"user is logged out",
-//             data: response,
-//             error: {}
-//         });
-//     } catch (error) {
-//         console.log("Something went wrong in user controller layer");
-//         return res.status(500).json({
-//             success: false,
-//             message:"Something went wrong",
-//             data: {},
-//             error: error,
-//         });
-//     }
-// }
+const logout = async (req,res) => {
+    try {
+        const refreshToken = req.headers['refresh-token'];
+        // console.log(refreshToken);
+        if(!refreshToken) return res.status(401).json({message: "Refresh Token not found"});
+
+        //remove accessToken and refresh token from user(cookies, localstorage)
+        //delete refreshToken from db
+
+        const response = await userService.logout(refreshToken);
+
+        return res.status(200).json({
+            success: response.success,
+            message:response.message,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 module.exports = {
@@ -190,5 +195,5 @@ module.exports = {
     // isManager,
     // makeManager,
     changePassword,
-    // logout
+    logout
 }

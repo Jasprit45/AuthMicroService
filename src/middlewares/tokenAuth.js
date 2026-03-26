@@ -4,7 +4,7 @@ const {JWT_ACCESS_KEY} = require('../config/serverConfig');
 const isAuthenticated = (req,res,next) => {  
     try {
         const accessToken = req.headers['x-access-token'];
-        if(!accessToken) return  res.status(401).json({message: "no token" });
+        if(!accessToken) return  res.status(401).json({message: "no access token" });
 
         const response = jwt.verify(accessToken,JWT_ACCESS_KEY);
         req.body.userId =  response.id;
