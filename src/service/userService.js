@@ -1,5 +1,4 @@
 const UserRepository  = require('../repository/userRepository');
-const RoleRepository = require('../repository/roleRepository');
 const TokenRepository = require('../repository/tokenRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -11,7 +10,6 @@ class UserService {
     
     constructor() {
         this.userRepository = new UserRepository();
-        this.roleRepository = new RoleRepository();
         this.tokenRepository = new TokenRepository();
     }
 
@@ -42,14 +40,21 @@ class UserService {
         }
     }
 
-    verifyToken(accessToken){
-        try {
-            const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
-            return decoded;
-        } catch (error) {
-            throw error;
-        }
-    }
+    // verifyToken(accessToken){
+    //     try {
+    //         const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
+    //         return decoded;
+    //     } catch (error) {
+    //          if (error.name === "TokenExpiredError") {
+    //             return { expired: true };
+    //         }
+
+    //         if (error.name === "JsonWebTokenError") {
+    //             return { invalid: true };
+    //         }
+    //         throw error;
+    //     }
+    // }
 
     comparePassword(plainPassword,encryptedPassword){
         try {
@@ -81,7 +86,6 @@ class UserService {
             const hashedToken = this.hashToken(refreshToken);
 
 
-
             await this.tokenRepository.create({
                 userId : user.id,
                 token : hashedToken,
@@ -98,32 +102,14 @@ class UserService {
         }
     }
 
-    async isAuthenticated(accessToken) {
-        try {
-            const response = this.verifyToken(accessToken);
-
-            if(!response) throw {error:"Invalid Token!!"};
-
-            const user = await this.userRepository.getById(response.id); //get a sequelize object 
-            if(!user) throw {error: "No user with this token"};
-
-            // console.log(user);
-            return user.dataValues.id;
-
-        } catch (error) {
-            console.log("Something went wrong in user service layer");
-            throw error;
-        }
-    }
-
     
 
-    async updatePassword(token, oldPassword, newPassword){
+    async updatePassword(userId, oldPassword, newPassword){
         try {
             // is user is authenticated
-            const userId = await this.isAuthenticated(token);
 
             //get the user
+            // console.log(userId);
             const user  = await this.userRepository.getById(userId); //sequelize object
             
 
@@ -142,69 +128,71 @@ class UserService {
             throw error;
         }
     }
+
+    //todos
     
-    async isAdmin(userId){
-        try {
-            const user = await this.userRepository.getById(userId); //sequelize object 
-            const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
+    // async isAdmin(userId){
+    //     try {
+    //         const user = await this.userRepository.getById(userId); //sequelize object 
+    //         const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
 
-            const res = await user.hasRole(adminRole);
+    //         const res = await user.hasRole(adminRole);
             
-            return res;
+    //         return res;
             
-        } catch (error) {
-            console.log("Something went wrong in user service layer");
-            throw error;
-        }
-    }
-    async makeAdmin(userId){
-        try {
-            const user = await this.userRepository.getById(userId); //sequelize object 
-            if(!user) throw {error: "Not a valid user"};
+    //     } catch (error) {
+    //         console.log("Something went wrong in user service layer");
+    //         throw error;
+    //     }
+    // }
+    // async makeAdmin(userId){
+    //     try {
+    //         const user = await this.userRepository.getById(userId); //sequelize object 
+    //         if(!user) throw {error: "Not a valid user"};
 
-            const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
-            if(!adminRole) throw {error: "Admin is not a Role"};
+    //         const adminRole = await this.roleRepository.findAdminRole(); //sequelize object 
+    //         if(!adminRole) throw {error: "Admin is not a Role"};
 
-            // console.log(typeof user.addRole);
-            await user.addRole(adminRole);
-            return true;
+    //         // console.log(typeof user.addRole);
+    //         await user.addRole(adminRole);
+    //         return true;
 
-        } catch (error) {
-            console.log("Something went wrong in user service layer", error);
-            throw error;
-        }
-    }
-    async isManager(userId){
-        try {
-            const user = await this.userRepository.getById(userId); //sequelize object 
-            const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
+    //     } catch (error) {
+    //         console.log("Something went wrong in user service layer", error);
+    //         throw error;
+    //     }
+    // }
+    // async isManager(userId){
+    //     try {
+    //         const user = await this.userRepository.getById(userId); //sequelize object 
+    //         const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
 
-            const res = await user.hasRole(managerRole);
+    //         const res = await user.hasRole(managerRole);
             
-            return res;
+    //         return res;
             
-        } catch (error) {
-            console.log("Something went wrong in user service layer");
-            throw error;
-        }
-    }
-    async makeManager(userId){
-        try {
-            const user = await this.userRepository.getById(userId); //sequelize object 
-            if(!user) throw {error: "Not a valid user"};
+    //     } catch (error) {
+    //         console.log("Something went wrong in user service layer");
+    //         throw error;
+    //     }
+    // }
+    // async makeManager(userId){
+    //     try {
+    //         const user = await this.userRepository.getById(userId); //sequelize object 
+    //         if(!user) throw {error: "Not a valid user"};
 
-            const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
-            if(!managerRole) throw {error: "Admin is not a Role"};
+    //         const managerRole = await this.roleRepository.findManagerRole(); //sequelize object 
+    //         if(!managerRole) throw {error: "Admin is not a Role"};
 
-            // console.log(typeof user.addRole);
-            await user.addRole(managerRole);
-            return true;
+    //         // console.log(typeof user.addRole);
+    //         await user.addRole(managerRole);
+    //         return true;
 
-        } catch (error) {
-            console.log("Something went wrong in user service layer", error);
-            throw error;
-        }
-    }
+    //     } catch (error) {
+    //         console.log("Something went wrong in user service layer", error);
+    //         throw error;
+    //     }
+    // }
     // async logout(token){
     //     try {
     //         const userId = await this.isAuthenticated(token); 
