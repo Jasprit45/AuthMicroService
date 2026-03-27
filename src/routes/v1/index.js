@@ -67,4 +67,10 @@ router.get('/logout',
     userController.logout
 );
 
+router.get('/users',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isManagerOrAdmin,
+    userController.getAllUsers
+);
+
 module.exports = router;

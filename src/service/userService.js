@@ -228,6 +228,22 @@ class UserService {
             throw error;
         }
     }
+    async getAllUsers(query){
+        try {
+            const {count , rows} = await this.userRepository.getAllUsers(query);
+
+             return {
+                totalUsers: count,
+                totalPages: Math.ceil(count / query.limit),
+                currentPage: Number(query.page) || 1,
+                users: rows
+            };
+
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = UserService;

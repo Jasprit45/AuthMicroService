@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const {User} = require('../models/index');
 
 class UserRepository {
@@ -70,6 +71,40 @@ class UserRepository {
             throw error;
         }
     }
+    async getAllUsers(query){
+        try {
+            // console.log(query);
+            const limit = query.limit;
+            const offset = (query.page-1)* limit;
+
+
+            let whereClause = {};
+
+            if (query.role) {
+                whereClause.role = query.role;
+            }
+            if (query.search) {
+                whereClause.email = {
+                    [Op.like]: `%${query.search}%`
+                };
+            }
+
+            const users = await User.findAndCountAll({
+                where: whereClause,
+                attributes: ['id', 'name', 'email', 'role', 'createdAt'],
+                limit,
+                offset,
+                order: [['createdAt', 'DESC']]
+            });
+
+            return users;
+
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
+    
    
 }
 

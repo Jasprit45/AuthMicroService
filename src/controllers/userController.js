@@ -49,7 +49,7 @@ const signIn = async (req,res) => {
 
 const refreshToken = async (req,res) => {
     try {
-        const response = await userService.assignNewAccessToken(req.body.refreshToken, req.body.userId);
+        const response = await userService.assignNewAccessToken(req.body.refreshToken, req.user.id);
         return res.status(200).json({
             success: true,
             message:"token created",
@@ -70,7 +70,7 @@ const refreshToken = async (req,res) => {
 
 const makeAdmin = async (req,res) => {
     try {
-        const response = await userService.makeAdmin(req.body.userId, req.body.email);
+        const response = await userService.makeAdmin(req.user.id, req.body.email);
         return res.status(200).json({
             success: true,
             message:`${req.body.email} is now an Admin`,
@@ -89,7 +89,7 @@ const makeAdmin = async (req,res) => {
 }
 const makeManager = async (req,res) => {
     try {
-        const response = await userService.makeManager(req.body.userId, req.body.email);
+        const response = await userService.makeManager(req.user.id, req.body.email);
         return res.status(200).json({
             success: true,
             message:`${req.body.email} is now a Manager`,
@@ -110,7 +110,7 @@ const makeManager = async (req,res) => {
 
 const changePassword = async (req,res) => {
     try {
-        const response = await userService.updatePassword( req.body.userId , req.body.oldPassword, req.body.newPassword);
+        const response = await userService.updatePassword( req.user.id , req.body.oldPassword, req.body.newPassword);
         return res.status(200).json({
             success: true,
             message:"user Password is changed",
@@ -152,6 +152,7 @@ const logout = async (req,res) => {
         });
     }
 }
+
 const dummy = async (req,res) => {
     try {
         return res.status(200).json({
@@ -168,6 +169,32 @@ const dummy = async (req,res) => {
         });
     }
 }
+const getAllUsers = async (req,res) => {
+    try {
+        const query = {
+            page: parseInt(req.query.page) || 1,
+            limit: parseInt(req.query.limit) || 3,
+            role: req.query.role,
+            search: req.query.search //a part of email {ex. gmail}
+        };
+        const users = await userService.getAllUsers(query);
+        return res.status(200).json({
+            success: true,
+            message:"Fetched All users",
+            users,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
+
+
 
 
 module.exports = {
@@ -178,5 +205,6 @@ module.exports = {
     makeManager,
     changePassword,
     logout,
-    dummy
+    dummy,
+    getAllUsers,
 }
