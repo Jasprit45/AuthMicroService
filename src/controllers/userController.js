@@ -152,6 +152,27 @@ const logout = async (req,res) => {
         });
     }
 }
+const logoutAll = async (req,res) => {
+    try {
+        
+        //remove accessToken from user(cookies, localstorage)
+        //delete userid  from tokendb
+        const response = await userService.logoutAll(req.user.id);
+
+        return res.status(200).json({
+            success: response,
+            message:"Logged-Out",
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 const dummy = async (req,res) => {
     try {
@@ -193,6 +214,24 @@ const getAllUsers = async (req,res) => {
         });
     }
 }
+const getUser = async (req,res) => {
+    try {
+        const user = await userService.getUser(req.params.id);
+        return res.status(200).json({
+            success: true,
+            message:"Fetched  user",
+            data : user,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 
@@ -205,6 +244,8 @@ module.exports = {
     makeManager,
     changePassword,
     logout,
+    logoutAll,
     dummy,
     getAllUsers,
+    getUser,
 }

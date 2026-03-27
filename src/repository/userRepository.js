@@ -5,7 +5,12 @@ class UserRepository {
     async create(data){
         try {
             const user = await User.create(data);
-            return user;
+            return {
+                id: user.id,
+                name:user.name,
+                email:user.email,
+                role:user.role
+            };
         } catch (error) {
             console.log("Something went wrong in userRepository");
             throw error;

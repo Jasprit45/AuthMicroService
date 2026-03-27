@@ -56,7 +56,7 @@ router.patch('/admin/make-manager',
     userController.makeManager  
 );
 
-router.patch('/change-password',
+router.patch('/users/change-password',
     TokenAuth.isAuthenticated,
     AuthRequestValidators.validatePasswordChange,
     userController.changePassword
@@ -66,11 +66,20 @@ router.get('/logout',
     TokenAuth.isAuthenticated,
     userController.logout
 );
+router.get('/logout-all',
+    TokenAuth.isAuthenticated,
+    userController.logoutAll
+);
 
 router.get('/users',
     TokenAuth.isAuthenticated,
     TokenAuth.isManagerOrAdmin,
     userController.getAllUsers
+);
+router.get('/users/:id',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isManagerOrAdminOrSelf,
+    userController.getUser
 );
 
 module.exports = router;

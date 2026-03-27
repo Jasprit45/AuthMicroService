@@ -228,6 +228,18 @@ class UserService {
             throw error;
         }
     }
+    async logoutAll(id){
+        try {
+           
+            //then delete the userid from db
+            const res = await this.tokenRepository.deleteById(id);
+            return res;
+
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
     async getAllUsers(query){
         try {
             const {count , rows} = await this.userRepository.getAllUsers(query);
@@ -239,6 +251,20 @@ class UserService {
                 users: rows
             };
 
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
+    async getUser(id){
+        try {
+            const user = await this.userRepository.getById(id);
+            return {
+                id:user.id,
+                name:user.name,
+                email:user.email,
+                role:user.role
+            };
         } catch (error) {
             console.log("Something went wrong in user service layer", error);
             throw error;

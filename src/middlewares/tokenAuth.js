@@ -53,6 +53,15 @@ const isManagerOrAdmin = (req,res,next) => {
     }
     next();
 }
+const isManagerOrAdminOrSelf = (req,res,next) => { 
+    // console.log(req.body.userrole); 
+    if(req.user.role !== 'MANAGER' && req.user.role !== 'ADMIN' && req.user.id != req.params.id){
+        res.status(403).json({
+            message: "Access denied. Owner and Admin/Manager only."
+        });
+    }
+    next();
+}
 
 const isRefreshToken = (req,res,next) => {  
     try {
@@ -83,4 +92,5 @@ module.exports = {
     isAdmin,
     isManager,
     isManagerOrAdmin,
+    isManagerOrAdminOrSelf,
 }
