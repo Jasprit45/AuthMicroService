@@ -16,3 +16,5 @@ Role = ADMIN, MANAGER, USER
 
 A admin can only change the role of the user. ex. from USER -> ADMIN 
 
+Used cron-job to schedule the deletion of expired tokens from db (like every 12hr) { If the refresh tokens are in millions then indexing will help to reduce time in searching for expired tokens (improve more than 10times)} {can use partition too} { can use rotation of refresh token while creating new access token}
+

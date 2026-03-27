@@ -30,7 +30,7 @@ router.patch('/admin/make-admin',
     TokenAuth.isAuthenticated,
     TokenAuth.isAdmin,
     AuthRequestValidators.validateRoleChange,
-    userController.makeAdmin
+    userController.makeAdmin //TODO :logout the user to make access token role as Admin
 );
 
 router.get('/is-admin',
@@ -53,7 +53,7 @@ router.patch('/admin/make-manager',
     TokenAuth.isAuthenticated,
     TokenAuth.isAdmin,
     AuthRequestValidators.validateRoleChange,
-    userController.makeManager
+    userController.makeManager  //TODO :logout the user to make access token role as manager
 );
 
 router.patch('/change-password',

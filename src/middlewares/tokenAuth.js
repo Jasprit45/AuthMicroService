@@ -56,7 +56,6 @@ const isRefreshToken = (req,res,next) => {
         next();
     } catch (error) {
         if(error?.expired) {
-            //TODO : i will use cron-job to schedule the deletion of expired tokens from db
             return res.status(401).json({
                 message: "Token is expired"
             });

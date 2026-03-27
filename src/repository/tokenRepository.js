@@ -1,4 +1,6 @@
-const {Refresh_tokens}  = require('../models/index')
+const {Refresh_tokens}  = require('../models/index');
+const {Op} = require('sequelize');
+
 
 class TokenRepository {
     async create(data){
@@ -66,6 +68,23 @@ class TokenRepository {
             };
         } catch (error) {
             console.log("Something went wrong in token repository");
+            console.log(error);
+            throw error;
+        }
+    }
+    async destroyExpiredToken(){
+        try {
+            await Refresh_tokens.destroy({
+                where: {
+                    expiresAt: {
+                        [Op.lt]: new Date()
+                    }
+                }
+            });
+
+           
+        } catch (error) {
+            console.log("Something went wrong in deleting expired token in token repository");
             console.log(error);
             throw error;
         }

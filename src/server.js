@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const {PORT} = require('./config/serverConfig');
 const apiRoutes = require('./routes/apiRoutes');
 const db = require('./models/index');
+const startTokenCleanupJob = require('./job/tokenCleanupJob')
 const app = express();
 
 const startServer = () => {
@@ -15,6 +16,8 @@ const startServer = () => {
     app.listen(PORT, () => {
         console.log(`Server started at : ${PORT}`);
     });
+
+    startTokenCleanupJob();
 
     if(process.env.DB_SYNC){
         db.sequelize.sync({alert: true})
