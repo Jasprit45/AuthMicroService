@@ -23,7 +23,7 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
-        allowNull:false,
+        allowNull:true,
         validate: {
           len: [6,100]
         }
@@ -32,6 +32,16 @@ module.exports = {
         type: Sequelize.ENUM('ADMIN','MANAGER','USER'),
         allowNull: false,
         defaultValue : 'USER'
+      },
+      googleId: {
+        type : Sequelize.STRING,
+        allowNull : true,
+        unique:true
+      },
+      provider : {
+        type : Sequelize.ENUM('GOOGLE','LOCAL'),
+        allowNull : false,
+        defaultValue  : 'LOCAL'
       },
       createdAt: {
         allowNull: false,

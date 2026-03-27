@@ -11,12 +11,11 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    // await queryInterface.addColumn('Users' , 'role' , {
-    //   type : Sequelize.ENUM('ADMIN','Manager','USER'),
-    //   allowNull : false,
-    //   defaultValue  : 'USER'
-    // });
-    
+    await queryInterface.addColumn('Users' , 'role' , {
+      type : Sequelize.ENUM('ADMIN','Manager','USER'),
+      allowNull : false,
+      defaultValue  : 'USER'
+    });
   },
 
   async down (queryInterface, Sequelize) {

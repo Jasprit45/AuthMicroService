@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: {
       type:DataTypes.STRING,
-      allowNull:false,
+      allowNull:true,
       validate: {
         len: [6,100]
       }
@@ -41,7 +41,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('ADMIN','MANAGER','USER'),
       allowNull: false,
       defaultValue : 'USER'
+    },
+    googleId: {
+      type : DataTypes.STRING,
+      allowNull : true,
+      unique:true
+    },
+    provider : {
+      type : DataTypes.ENUM('GOOGLE','LOCAL'),
+      allowNull : false,
+      defaultValue  : 'LOCAL'
     }
+
   }, {
     sequelize,
     modelName: 'User',

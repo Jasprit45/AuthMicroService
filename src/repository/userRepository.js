@@ -16,6 +16,19 @@ class UserRepository {
             throw error;
         }
     }
+    async createGoogleUser(data){
+        try {
+            const user = await User.create(data);
+            return {
+                id: user.id,
+                name:user.name,
+                role:user.role
+            };
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
     async updateRoleToAdmin(userId){
         try {       
             const user = await User.update({ role: 'ADMIN' } , {where: {id:userId}});
@@ -109,6 +122,20 @@ class UserRepository {
             throw error;
         }
     }
+
+    async updateProvider(userId,googleId,provider) {
+        try {
+            return await User.update(
+            { provider, googleId },
+            { where: { id: userId } }
+        );
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
+
+
     
    
 }
