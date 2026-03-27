@@ -181,7 +181,14 @@ class UserService {
             const user = await this.userRepository.getById(userId); //sequelize object 
             if(!user) throw {error: "Not a valid user"};
 
-            const res = await this.userRepository.updateRoleToAdmin(guestEmail);
+            const guestUser = await this.userRepository.getByEmail(guestEmail); //return json object
+            
+            const res = await this.userRepository.updateRoleToAdmin(guestUser.id);
+            
+            //the guestUser should logged out to change the role 
+            //logging out all the session of that user
+            await this.tokenRepository.deleteById(guestUser.id);
+            
             return res;
         } catch (error) {
             console.log("Something went wrong in user service layer", error);
@@ -192,8 +199,11 @@ class UserService {
         try {
             const user = await this.userRepository.getById(userId); //sequelize object 
             if(!user) throw {error: "Not a valid user"};
+            
+            const guestUser = await this.userRepository.getByEmail(guestEmail); //return json object
+            const res = await this.userRepository.updateRoleToManager(guestUser.id);
 
-            const res = await this.userRepository.updateRoleToManager(guestEmail);
+            await this.tokenRepository.deleteById(guestUser.id);
             return res;
         } catch (error) {
             console.log("Something went wrong in user service layer", error);

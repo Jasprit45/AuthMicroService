@@ -10,9 +10,9 @@ class UserRepository {
             throw error;
         }
     }
-    async updateRoleToAdmin(guestEmail){
+    async updateRoleToAdmin(userId){
         try {       
-            const user = await User.update({ role: 'ADMIN' } , {where: {email:guestEmail}});
+            const user = await User.update({ role: 'ADMIN' } , {where: {id:userId}});
             if(!user) throw new Error("User not found!!");
 
             return user;
@@ -21,9 +21,9 @@ class UserRepository {
             throw error;
         }
     }
-    async updateRoleToManager(guestEmail){
+    async updateRoleToManager(userId){
         try {       
-            const user = await User.update({ role: 'MANAGER' } , {where: {email:guestEmail}});
+            const user = await User.update({ role: 'MANAGER' } , {where: {id:userId}});
             if(!user) throw new Error("User not found!!");
 
             return user;
