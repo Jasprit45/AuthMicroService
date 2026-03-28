@@ -47,8 +47,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull : true,
       unique:true
     },
+    githubId: {
+      type : DataTypes.STRING,
+      allowNull : true,
+      unique:true
+    },
     provider : {
-      type : DataTypes.ENUM('GOOGLE','LOCAL'),
+      type : DataTypes.STRING,
       allowNull : false,
       defaultValue  : 'LOCAL'
     }

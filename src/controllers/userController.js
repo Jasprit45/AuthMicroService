@@ -49,7 +49,7 @@ const signIn = async (req,res) => {
 
 const refreshToken = async (req,res) => {
     try {
-        const response = await userService.assignNewAccessToken(req.body.refreshToken, req.user.id);
+        const response = await userService.assignNewAccessToken(req.user.refreshToken, req.user.id);
         return res.status(200).json({
             success: true,
             message:"token created",

@@ -16,7 +16,7 @@ class UserRepository {
             throw error;
         }
     }
-    async createGoogleUser(data){
+    async createOAuthUser(data){
         try {
             const user = await User.create(data);
             return {
@@ -108,7 +108,7 @@ class UserRepository {
 
             const users = await User.findAndCountAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'email', 'role', 'createdAt'],
+                attributes: ['id', 'name', 'email', 'role', 'provider', 'createdAt'],
                 limit,
                 offset,
                 order: [['createdAt', 'DESC']]

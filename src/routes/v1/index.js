@@ -4,6 +4,7 @@ const userController = require('../../controllers/userController');
 const {AuthRequestValidators , TokenAuth} = require('../../middlewares/index');
 
 const googleRoutes = require('./googleAuth');
+const githubRoutes = require('./githubAuth');
  
 const router  = express.Router();
 
@@ -84,5 +85,7 @@ router.get('/users/:id',
     userController.getUser
 );
 router.use('/auth/google', googleRoutes);
+
+router.use('/auth/github', githubRoutes);
 
 module.exports = router;

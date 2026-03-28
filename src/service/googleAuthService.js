@@ -31,7 +31,7 @@ class GoogleAuthService {
             let user  = await userRepository.getByEmail(email);  //let for reassigning 
 
             if(!user) {   //create new user
-                user = await userRepository.createGoogleUser({email,name,googleId,provider: 'GOOGLE'});
+                user = await userRepository.createOAuthUser({email,name,googleId,provider: 'GOOGLE'});
             }
 
             user.googleId = googleId;

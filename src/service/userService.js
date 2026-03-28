@@ -15,7 +15,7 @@ class UserService {
 
     async signUp(data) {
         try {
-            if(!data.role) data.role = 'USER';
+            data.role = 'USER';  //can't logic with admin and manager
             const user = await this.userRepository.create(data);
             return user;
         } catch (error) {
@@ -165,10 +165,14 @@ class UserService {
             if(!isMatch) throw {error: "OLD PASSWORD NOT MATCHED"};
             
             //encrypting password before update 
-            user.dataValues.password = bcrypt.hashSync(newPassword,SALT);
+            user.password = bcrypt.hashSync(newPassword,SALT);
 
             await user.save();  //save in userdb
-            return user; 
+            return {
+                id:user.id,
+                name:user.name,
+                email:user.email,
+            }; 
 
         } catch (error) {
             console.log("Something went wrong in userService");
@@ -263,7 +267,9 @@ class UserService {
                 id:user.id,
                 name:user.name,
                 email:user.email,
-                role:user.role
+                role:user.role,
+                googleId:user.googleId,
+                provider:user.provider
             };
         } catch (error) {
             console.log("Something went wrong in user service layer", error);

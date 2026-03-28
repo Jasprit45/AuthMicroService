@@ -70,7 +70,7 @@ const isRefreshToken = (req,res,next) => {
 
         const response = jwt.verify(refreshToken,JWT_REFRESH_KEY);
         req.user =  response;
-        req.body.refreshToken = refreshToken;
+        req.user.refreshToken = refreshToken;
         next();
     } catch (error) {
         if(error?.expired) {
