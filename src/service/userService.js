@@ -27,7 +27,7 @@ class UserService {
     createAccessToken(user) {
         try {
             if(!user.role) user.role = 'USER';
-            console.log("ROLE ---- ",user.role);
+            // console.log("ROLE ---- ",user.role);
             const token = jwt.sign({id:user.id, role:user.role},JWT_ACCESS_KEY,{expiresIn: '1d'});
             return token;
         } catch (error) {

@@ -6,7 +6,14 @@ const db = require('./models/index');
 const startTokenCleanupJob = require('./job/tokenCleanupJob')
 const app = express();
 
+const cors = require('cors');
+
 const startServer = () => {
+    app.use(cors({
+        origin: "http://localhost:5174",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true
+    }));
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:true}));

@@ -25,7 +25,7 @@ class UserRepository {
                 role:user.role
             };
         } catch (error) {
-            console.log("Something went wrong in userRepository");
+            console.log("Something went wrong in userRepository",error);
             throw error;
         }
     }
@@ -67,10 +67,9 @@ class UserRepository {
     async getByEmail(email){
         try {
             const user = await User.findOne({ where: { email: email}});
-            if(!user) throw {error: "User not found"};
+            // if(!user) throw {error: "User not found"};
 
-            // console.log(user);
-            return user.dataValues; //return plain json object
+            return user; //return seq object
 
         } catch (error) {
             console.log("Something went wrong in userRepository");

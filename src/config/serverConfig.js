@@ -9,4 +9,5 @@ module.exports = {
     JWT_ACCESS_KEY:process.env.JWT_ACCESS_KEY,
     JWT_REFRESH_KEY:process.env.JWT_REFRESH_KEY,
     TOKEN_SECRET:process.env.TOKEN_SECRET,
+    GOOGLE_CLIENT_ID:process.env.GOOGLE_CLIENT_ID
 }
