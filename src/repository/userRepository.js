@@ -51,6 +51,21 @@ class UserRepository {
             throw error;
         }
     }
+    async updateUserById(userId,update){
+        try {       
+            const [countRows] = await User.update(update , {where: {id:userId}});
+            if(countRows==0) throw new Error("User not found!!");
+
+            const updatedUser = await User.findByPk(userId, {
+                attributes: { exclude: ['password'] }
+            });
+
+            return updatedUser;
+        } catch (error) {
+            console.log("Something went wrong in userRepository");
+            throw error;
+        }
+    }
     async delete(userId){
         try {
             await User.destroy({
@@ -133,6 +148,8 @@ class UserRepository {
             throw error;
         }
     }
+    
+
 
 
     

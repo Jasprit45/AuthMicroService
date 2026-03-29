@@ -208,7 +208,7 @@ class UserService {
             const res = await this.userRepository.updateRoleToManager(guestUser.id);
 
             await this.tokenRepository.deleteById(guestUser.id);
-            return res;
+            return true;
         } catch (error) {
             console.log("Something went wrong in user service layer", error);
             throw error;
@@ -269,7 +269,36 @@ class UserService {
                 email:user.email,
                 role:user.role,
                 googleId:user.googleId,
+                githubId:user.githubId,
                 provider:user.provider
+            };
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
+    async getMyProfile(id){
+        try {
+            const user = await this.userRepository.getById(id);
+            return {
+                id:user.id,
+                name:user.name,
+                email:user.email,
+                role:user.role,
+            };
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
+    async updateUser(id, update){
+        try {
+            const user = await this.userRepository.updateUserById(id,update);
+            return {
+                id:user.id,
+                name:user.name,
+                email:user.email,
+                role:user.role,
             };
         } catch (error) {
             console.log("Something went wrong in user service layer", error);

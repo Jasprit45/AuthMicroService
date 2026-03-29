@@ -232,6 +232,46 @@ const getUser = async (req,res) => {
         });
     }
 }
+const getMyProfile = async (req,res) => {
+    try {
+        const user = await userService.getMyProfile(req.user.id);
+        return res.status(200).json({
+            success: true,
+            message:"Fetched  myinfo",
+            data : user,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
+const updateMyProfile = async (req,res) => {
+    try {
+        if(!req.body) return res.status(400).json({message:"Not having anything to update in body"});
+        const allowedUpdate = {
+            name: req.body.name
+        };
+        const user = await userService.updateUser(req.user.id , allowedUpdate);
+        return res.status(200).json({
+            success: true,
+            message:"Updated  myinfo",
+            data : user,
+            error: {}
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer",error);
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 
@@ -248,4 +288,6 @@ module.exports = {
     dummy,
     getAllUsers,
     getUser,
+    getMyProfile,
+    updateMyProfile
 }
