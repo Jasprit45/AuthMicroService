@@ -18,6 +18,14 @@ A admin can only change the role of the user. ex. from USER -> ADMIN
 when the role of a user is changed we delete the refreshtoken from db now after his accesstoken(short-lived) expired user need to again login and then can  access all the changed role. 
 (if needed we can use tokenversioning but it need db call on each auth -- currently i am not doing that)
 
+problem : user should not access anything if logout (access token  gives some time if copied)
+Token Versioning :
+    Force logout all sessions
+    Invalidate old tokens when role/password changes
+    Avoid trusting JWTs only 
+(TODO : will apply redis to avoid frequent db call)
+
+Added sessionId to tokendb for sessionmanagement. Also used indexing on sessionId for fast query(serach)
 
 Used cron-job to schedule the deletion of expired tokens from db (like every 12hr) { If the refresh tokens are in millions then indexing will help to reduce time in searching for expired tokens (improve more than 10times)} {can use partition too} { can use rotation of refresh token while creating new access token}
 
@@ -27,4 +35,3 @@ support login through google and github
 
 
 TODO :- if a user login through github/google but then logic through local than we need to manage password and one user should have one account and can logic through diffrent platform 
- 
