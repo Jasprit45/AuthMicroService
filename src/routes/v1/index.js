@@ -1,91 +1,13 @@
 const express = require('express');
 
-const userController = require('../../controllers/userController');
-const {AuthRequestValidators , TokenAuth} = require('../../middlewares/index');
-
-const googleRoutes = require('./googleAuth');
-const githubRoutes = require('./githubAuth');
- 
 const router  = express.Router();
 
-router.post('/signup',
-    AuthRequestValidators.validateSignup,
-    userController.signUp
-);
+const authRoutes = require('./auth/authRoutes');
+const userRoutes = require('./user/userRoutes');
+const adminRoutes = require('./admin/adminRoutes');
 
-router.get('/login',
-    AuthRequestValidators.validateSignin,
-    userController.signIn
-);
-
-router.post('/refresh-token',
-    TokenAuth.isRefreshToken,
-    userController.refreshToken
-);
-
-router.get('/isAuthenticated',
-    TokenAuth.isAuthenticated,
-    userController.dummy
-);
-
-
-router.patch('/admin/make-admin',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isAdmin,
-    AuthRequestValidators.validateRoleChange,
-    userController.makeAdmin 
-);
-
-router.get('/is-admin',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isAdmin,
-    (req,res)=> {
-        res.json({message: "Welcome Admin!!!"});
-    }
-);
-
-router.get('/is-manager',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isManager,
-    (req,res)=> {
-        res.json({message: "Welcome Manager!!!"});
-    }
-);
-
-router.patch('/admin/make-manager',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isAdmin,
-    AuthRequestValidators.validateRoleChange,
-    userController.makeManager  
-);
-
-router.patch('/users/change-password',
-    TokenAuth.isAuthenticated,
-    AuthRequestValidators.validatePasswordChange,
-    userController.changePassword
-);
-
-router.get('/logout',
-    TokenAuth.isAuthenticated,
-    userController.logout
-);
-router.get('/logout-all',
-    TokenAuth.isAuthenticated,
-    userController.logoutAll
-);
-
-router.get('/users',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isManagerOrAdmin,
-    userController.getAllUsers
-);
-router.get('/users/:id',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isManagerOrAdminOrSelf,
-    userController.getUser
-);
-router.use('/auth/google', googleRoutes);
-
-router.use('/auth/github', githubRoutes);
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/admin', adminRoutes);
 
 module.exports = router;

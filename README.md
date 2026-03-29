@@ -21,3 +21,10 @@ when the role of a user is changed we delete the refreshtoken from db now after 
 
 Used cron-job to schedule the deletion of expired tokens from db (like every 12hr) { If the refresh tokens are in millions then indexing will help to reduce time in searching for expired tokens (improve more than 10times)} {can use partition too} { can use rotation of refresh token while creating new access token}
 
+
+
+support login through google and github 
+
+
+TODO :- if a user login through github/google but then logic through local than we need to manage password and one user should have one account and can logic through diffrent platform 
+ 
