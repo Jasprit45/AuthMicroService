@@ -66,7 +66,7 @@ class UserRepository {
             throw error;
         }
     }
-    async delete(userId){
+    async deleteById(userId){
         try {
             await User.destroy({
                 where: {

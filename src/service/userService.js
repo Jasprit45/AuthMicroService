@@ -305,6 +305,25 @@ class UserService {
             throw error;
         }
     }
+    async deleteAccount(id,refreshToken){
+        try {
+            //check the refresh token
+            await this.verifyRefreshToken(refreshToken); //await to hold and check the token
+
+            const hashedToken = this.hashToken(refreshToken);
+
+            //then delete the token from db
+            const res = await this.tokenRepository.deleteByToken(hashedToken);
+
+            // TODO: soft delete (isdeleted = true)
+
+            await this.userRepository.deleteById(id);
+            return true;
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = UserService;

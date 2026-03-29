@@ -272,6 +272,22 @@ const updateMyProfile = async (req,res) => {
         });
     }
 }
+const deleteMyAccount = async (req,res) => {
+    try {
+        const user = await userService.deleteAccount(req.user.id , req.user.refreshToken);
+        return res.status(200).json({
+            success: true,
+            message:"Account Deleted",
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer",error);
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 
@@ -289,5 +305,6 @@ module.exports = {
     getAllUsers,
     getUser,
     getMyProfile,
-    updateMyProfile
+    updateMyProfile,
+    deleteMyAccount
 }
