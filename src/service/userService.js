@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET} = require('../config/serverConfig');
+const { v4: uuidv4 } = require('uuid');
+
 
 
 class UserService {
@@ -15,7 +17,7 @@ class UserService {
 
     async signUp(data) {
         try {
-            data.role = 'USER';  //can't logic with admin and manager
+            data.role = 'USER';  //can't login with admin and manager
             const user = await this.userRepository.create(data);
             return user;
         } catch (error) {
@@ -26,17 +28,25 @@ class UserService {
 
     createAccessToken(user) {
         try {
-            if(!user.role) user.role = 'USER';
-            // console.log("ROLE ---- ",user.role);
-            const token = jwt.sign({id:user.id, role:user.role},JWT_ACCESS_KEY,{expiresIn: '1d'});
+            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, role:user.role},JWT_ACCESS_KEY,{expiresIn: '1d'});
             return token;
         } catch (error) {
             throw error;
         }
     }
-    createRefreshToken(user) {
+    async createRefreshToken(user) {  //create a refresh token and save it by hashing
         try {
-            const token = jwt.sign({id:user.id},JWT_REFRESH_KEY,{expiresIn: '15d'});
+            const sessionId = uuidv4();
+           
+            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, sessionId:sessionId},JWT_REFRESH_KEY,{expiresIn: '15d'});
+            const hashedToken = this.hashToken(token);
+
+            await this.tokenRepository.create({
+                userId : user.id,
+                token : hashedToken,
+                sessionId:sessionId
+            });
+
             return token;
         } catch (error) {
             throw error;
@@ -65,23 +75,17 @@ class UserService {
             if(!user) return new Error("This account has been deleted");
 
             //match refresh token
-
             const hashedRefreshToken = this.hashToken(refreshToken);
-
             //search in db if it is abilable or not ?
-
             // console.log("hashedRefreshToken :" ,hashedRefreshToken );
-
             const res = await this.tokenRepository.getByToken(hashedRefreshToken);
 
             // console.log(res.dataValues);
-
             if(!res) return new Error("Sign in required!");
 
             const newAccessToken = this.createAccessToken(user.dataValues);
 
             // console.log(newAccessToken);
-
             return {
                 accessToken:newAccessToken,
                 refreshToken:refreshToken,
@@ -100,7 +104,6 @@ class UserService {
 
     comparePassword(plainPassword,encryptedPassword){
         try {
-            console.log(plainPassword);
             const isMatch = bcrypt.compareSync(plainPassword,encryptedPassword);
             return isMatch;
         } catch (error) {
@@ -114,32 +117,16 @@ class UserService {
 
     async signIn(email,plainPassword){
         try {
-            const user = await this.userRepository.getByEmail(email);  // get a json object 
-            // console.log(user);
+            const user = await this.userRepository.getByEmail(email);  
             if(!user) throw {error: "User not found"};
+
             const isMatch = this.comparePassword(plainPassword,user.password);
-            // console.log(isMatch);
-            
             if(!isMatch) throw {error:"Password Not Matched"};
 
             const accessToken = this.createAccessToken(user);
-            const refreshToken = this.createRefreshToken(user);
+            const refreshToken = await this.createRefreshToken(user);
 
-            const hashedToken = this.hashToken(refreshToken);
-
-
-            await this.tokenRepository.create({
-                userId : user.id,
-                token : hashedToken,
-                expiresAt : new Date(Date.now() + 15*24*60*60*1000)
-            });
-
-            if(!user.role){
-                user.role = 'USER'; // for temp period
-                await user.save();
-            } 
-
-            //TODO : use rate-limiter and limit one user can only login from 3 diffrent device/tabs.
+            //TODO : use rate-limiter and limit one user can only login for 3 diffrent sessions.
 
             return {
                 accessToken:accessToken,
@@ -163,6 +150,10 @@ class UserService {
             //compare old-password
             const isMatch = this.comparePassword(oldPassword,user.dataValues.password);
             if(!isMatch) throw {error: "OLD PASSWORD NOT MATCHED"};
+
+            //logging out all session while password change for security
+            userId.tokenVersion +=1;
+            await this.tokenRepository.deleteById(userId); //also delete it from user frontend
             
             //encrypting password before update 
             user.password = bcrypt.hashSync(newPassword,SALT);
@@ -192,6 +183,8 @@ class UserService {
             //the guestUser should logged out to change the role 
             //logging out all the session of that user
             await this.tokenRepository.deleteById(guestUser.id);
+            guestUser.tokenVersion+=1;
+            await guestUser.save();
             
             return res;
         } catch (error) {
@@ -206,6 +199,8 @@ class UserService {
             
             const guestUser = await this.userRepository.getByEmail(guestEmail); //return json object
             const res = await this.userRepository.updateRoleToManager(guestUser.id);
+            guestUser.tokenVersion+=1;
+            await guestUser.save();
 
             await this.tokenRepository.deleteById(guestUser.id);
             return true;
@@ -237,6 +232,9 @@ class UserService {
            
             //then delete the userid from db
             const res = await this.tokenRepository.deleteById(id);
+            const user = await this.userRepository.getById(id);
+            user.tokenVersion+=1;
+            await user.save();
             return res;
 
         } catch (error) {

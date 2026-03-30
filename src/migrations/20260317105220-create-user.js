@@ -43,6 +43,11 @@ module.exports = {
         allowNull : true,
         unique:true
       },
+      tokenVersion: {
+        type : Sequelize.INTEGER,
+        allowNull : false,
+        defaultValue: 0
+      },
       provider : {
         type : Sequelize.STRING,
         allowNull : false,

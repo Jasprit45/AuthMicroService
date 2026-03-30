@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     expiresAt:{
       type: DataTypes.DATE,
       allowNull:false
+    },
+    sessionId: {
+      type : DataTypes.UUID,
+      allowNull : false,
+      unique:true
     }
   }, {
     sequelize,

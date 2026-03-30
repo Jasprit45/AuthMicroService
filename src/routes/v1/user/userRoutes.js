@@ -16,15 +16,16 @@ router.patch('/change-password',
     userController.changePassword
 );
 
-router.get('/',
-    TokenAuth.isAuthenticated,
-    TokenAuth.isManagerOrAdmin,
-    userController.getAllUsers
-);
 
 router.use('/me',
     TokenAuth.isAuthenticated,
     profileRoutes
+);
+
+router.get('/',
+    TokenAuth.isAuthenticated,
+    TokenAuth.isManagerOrAdmin,
+    userController.getAllUsers
 );
 
 router.get('/:id',

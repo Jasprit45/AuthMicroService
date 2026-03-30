@@ -19,7 +19,7 @@ router.get('/login',
 );
 
 router.post('/refresh-token',
-    TokenAuth.isRefreshToken,
+    TokenAuth.verifyRefreshToken,
     userController.refreshToken
 );
 

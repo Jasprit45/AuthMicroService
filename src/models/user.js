@@ -42,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue : 'USER'
     },
+    tokenVersion: {
+      type : DataTypes.INTEGER,
+      allowNull : false,
+      defaultValue: 0
+    },
     googleId: {
       type : DataTypes.STRING,
       allowNull : true,

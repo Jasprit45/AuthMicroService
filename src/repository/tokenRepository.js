@@ -5,6 +5,7 @@ const {Op} = require('sequelize');
 class TokenRepository {
     async create(data){
         try {
+            data.expiresAt = new Date(Date.now() + 15*24*60*60*1000);
             const res = await Refresh_tokens.create(data);
             return res;
         } catch (error) {
@@ -32,6 +33,20 @@ class TokenRepository {
             const res = await Refresh_tokens.findOne({
                 where : {
                     token
+                }
+            });
+            return res;
+        } catch (error) {
+            console.log("Something went wrong in token repository");
+            console.log(error);
+            throw error;
+        }
+    }
+    async findBySessionId(sessionId){
+        try {
+            const res = await Refresh_tokens.findOne({
+                where : {
+                    sessionId
                 }
             });
             return res;

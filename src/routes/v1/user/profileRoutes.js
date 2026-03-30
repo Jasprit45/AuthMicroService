@@ -13,7 +13,7 @@ router.patch('',
 );
 
 router.delete('',
-    TokenAuth.isRefreshToken,
+    TokenAuth.verifyRefreshToken,
     userController.deleteMyAccount //delete the access and refresh token from the frontend 
 );
 

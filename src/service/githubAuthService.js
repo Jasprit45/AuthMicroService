@@ -63,15 +63,7 @@ class GithubAuthService {
 
             // 4. Tokens
             const jwtAccess = userService.createAccessToken(user);
-            const jwtRefresh = userService.createRefreshToken(user);
-
-            const hashedToken = userService.hashToken(jwtRefresh);
-
-            await tokenRepository.create({
-                userId : user.id,
-                token : hashedToken,
-                expiresAt : new Date(Date.now() + 15*24*60*60*1000)
-            });
+            const jwtRefresh = await userService.createRefreshToken(user);
 
             return {
                 user,

@@ -28,6 +28,11 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull:false
       },
+      sessionId: {
+        type : DataTypes.UUID,
+        allowNull : false,
+        unique:true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

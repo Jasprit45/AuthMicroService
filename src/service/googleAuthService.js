@@ -40,15 +40,7 @@ class GoogleAuthService {
             // console.log(user.id);
 
             const accessToken = userService.createAccessToken(user);
-            const refreshToken = userService.createRefreshToken(user);
-
-            const hashedToken = userService.hashToken(refreshToken);
-
-            await tokenRepository.create({
-                userId : user.id,
-                token : hashedToken,
-                expiresAt : new Date(Date.now() + 15*24*60*60*1000)
-            });
+            const refreshToken = await userService.createRefreshToken(user);
 
             return {
                 user,

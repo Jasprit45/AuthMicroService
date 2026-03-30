@@ -53,8 +53,8 @@ const refreshToken = async (req,res) => {
         return res.status(200).json({
             success: true,
             message:"token created",
-            refreshToken : response.refreshToken,
             accessToken : response.accessToken,
+            refreshToken : response.refreshToken,
             error: {}
         });
 
@@ -216,6 +216,7 @@ const getAllUsers = async (req,res) => {
 }
 const getUser = async (req,res) => {
     try {
+        
         const user = await userService.getUser(req.params.id);
         return res.status(200).json({
             success: true,

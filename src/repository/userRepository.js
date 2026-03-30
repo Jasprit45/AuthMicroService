@@ -4,6 +4,7 @@ const {User} = require('../models/index');
 class UserRepository {
     async create(data){
         try {
+            data.tokenVersion = 0;
             const user = await User.create(data);
             return {
                 id: user.id,
@@ -108,7 +109,6 @@ class UserRepository {
             // console.log(query);
             const limit = query.limit;
             const offset = (query.page-1)* limit;
-
 
             let whereClause = {};
 

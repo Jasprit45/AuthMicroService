@@ -1,18 +1,33 @@
 const jwt = require('jsonwebtoken');
 const {JWT_ACCESS_KEY , JWT_REFRESH_KEY} = require('../config/serverConfig');
+const UserRepository  = require('../repository/userRepository');
+const TokenRepository  = require('../repository/tokenRepository');
+const UserService = require('../service/userService');
 
-const isAuthenticated = (req,res,next) => {  
+const userRepository = new UserRepository();
+const tokenRepository = new TokenRepository();
+const userService = new UserService();
+
+const isAuthenticated = async (req,res,next) => {  
     try {
         const accessToken = req.headers['x-access-token'];
-        // console.log(accessToken);
         if(!accessToken) return  res.status(401).json({message: "no access token" });
-
-        const response = jwt.verify(accessToken,JWT_ACCESS_KEY);
-        // console.log("Response : ", response);
-        // console.log("Response id : ", response.id);
-        // console.log("Response role : ", response.role);
-        req.user = response;
         
+        // console.log("haiii-------");
+        const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
+        const user = await userRepository.getById(decoded.id);
+        
+        
+        if (decoded.tokenVersion !== user.tokenVersion) {
+            return res.status(401).json({
+                message: "Token expired (version mismatch)"
+            });
+        }
+        req.user = {
+            id: user.id,
+            role: user.role
+        };
+       
         next();
     } catch (error) {
         if(error?.expired) {
@@ -54,7 +69,8 @@ const isManagerOrAdmin = (req,res,next) => {
     next();
 }
 const isManagerOrAdminOrSelf = (req,res,next) => { 
-    // console.log(req.body.userrole); 
+    
+    // console.log("sdbciasfbvvh-------------", req.user); 
     if(req.user.role !== 'MANAGER' && req.user.role !== 'ADMIN' && req.user.id != req.params.id){
         res.status(403).json({
             message: "Access denied. Owner and Admin/Manager only."
@@ -63,12 +79,36 @@ const isManagerOrAdminOrSelf = (req,res,next) => {
     next();
 }
 
-const isRefreshToken = (req,res,next) => {  
+const verifyRefreshToken = async (req,res,next) => {  
     try {
         const refreshToken = req.headers['refresh-token'];
         if(!refreshToken) return  res.status(401).json({message: "refresh token required!" });
 
         const response = jwt.verify(refreshToken,JWT_REFRESH_KEY);
+
+        const user = await userRepository.getById(response.id);
+  
+        if (response.tokenVersion !== user.tokenVersion) {
+            return res.status(401).json({
+                message: "Token expired (version mismatch)"
+            });
+        }
+        const session = await tokenRepository.findBySessionId(response.sessionId);
+        
+        if(!session) {
+            return res.status(401).json({
+                message: "Session expired"
+            });
+        }
+
+        const hashedToken = userService.hashToken(refreshToken);
+        
+        if(session.token !== hashedToken){ 
+            return res.status(401).json({
+                message: "Token expired (version mismatch)"
+            });
+        }
+        
         req.user =  response;
         req.user.refreshToken = refreshToken;
         next();
@@ -88,7 +128,7 @@ const isRefreshToken = (req,res,next) => {
 
 module.exports = {
     isAuthenticated,
-    isRefreshToken,
+    verifyRefreshToken,
     isAdmin,
     isManager,
     isManagerOrAdmin,
