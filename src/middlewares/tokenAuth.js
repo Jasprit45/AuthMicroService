@@ -44,7 +44,7 @@ const isAuthenticated = async (req,res,next) => {
 const isAdmin = (req,res,next) => { 
     // console.log(req.body.userrole); 
     if(req.user.role !== 'ADMIN'){
-        res.status(403).json({
+        return res.status(403).json({
             message: "Access denied. Admin only."
         });
     }
@@ -53,7 +53,7 @@ const isAdmin = (req,res,next) => {
 const isManager = (req,res,next) => { 
     // console.log(req.body.userrole); 
     if(req.user.role !== 'MANAGER'){
-        res.status(403).json({
+        return res.status(403).json({
             message: "Access denied. Manager only."
         });
     }
@@ -62,7 +62,7 @@ const isManager = (req,res,next) => {
 const isManagerOrAdmin = (req,res,next) => { 
     // console.log(req.body.userrole); 
     if(req.user.role !== 'MANAGER' && req.user.role !== 'ADMIN'){
-        res.status(403).json({
+        return res.status(403).json({
             message: "Access denied. Admin and Manager only."
         });
     }
@@ -72,7 +72,7 @@ const isManagerOrAdminOrSelf = (req,res,next) => {
     
     // console.log("sdbciasfbvvh-------------", req.user); 
     if(req.user.role !== 'MANAGER' && req.user.role !== 'ADMIN' && req.user.id != req.params.id){
-        res.status(403).json({
+        return res.status(403).json({
             message: "Access denied. Owner and Admin/Manager only."
         });
     }
@@ -113,7 +113,7 @@ const verifyRefreshToken = async (req,res,next) => {
         req.user.refreshToken = refreshToken;
         next();
     } catch (error) {
-        if(error?.expired) {
+        if (error.name === "TokenExpiredError") {
             return res.status(401).json({
                 message: "Token is expired"
             });
@@ -123,8 +123,6 @@ const verifyRefreshToken = async (req,res,next) => {
         });
     }
 }
-
-
 
 module.exports = {
     isAuthenticated,

@@ -23,7 +23,7 @@ Token Versioning :
     Force logout all sessions
     Invalidate old tokens when role/password changes
     Avoid trusting JWTs only 
-(TODO : will apply redis to avoid frequent db call)
+(TODO : will apply redis to avoid frequent db call)(refreshtoken rotation)
 
 Added sessionId to tokendb for sessionmanagement. Also used indexing on sessionId for fast query(serach)
 

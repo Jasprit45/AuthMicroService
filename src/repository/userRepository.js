@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const {User} = require('../models/index');
 
+
 class UserRepository {
     async create(data){
         try {

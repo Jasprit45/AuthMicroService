@@ -3,7 +3,7 @@ const TokenRepository = require('../repository/tokenRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET} = require('../config/serverConfig');
+const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY} = require('../config/serverConfig');
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -28,7 +28,7 @@ class UserService {
 
     createAccessToken(user) {
         try {
-            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, role:user.role},JWT_ACCESS_KEY,{expiresIn: '1d'});
+            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, role:user.role},JWT_ACCESS_KEY,{expiresIn: ACCESS_KEY_EXPIRY});
             return token;
         } catch (error) {
             throw error;
@@ -38,7 +38,7 @@ class UserService {
         try {
             const sessionId = uuidv4();
            
-            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, sessionId:sessionId},JWT_REFRESH_KEY,{expiresIn: '15d'});
+            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, sessionId:sessionId},JWT_REFRESH_KEY,{expiresIn: REFRESH_KEY_EXPIRY});
             const hashedToken = this.hashToken(token);
 
             await this.tokenRepository.create({
@@ -53,22 +53,6 @@ class UserService {
         }
     }
 
-    async verifyRefreshToken(token){
-        try {
-            const decoded = jwt.verify(token,JWT_REFRESH_KEY);
-            return decoded;
-        } catch (error) {
-             if (error.name === "TokenExpiredError") {
-                return { expired: true };
-            }
-
-            if (error.name === "JsonWebTokenError") {
-                return { invalid: true };
-            }
-            throw error;
-        }
-    }
-
     async assignNewAccessToken(refreshToken,userId){
         try {
             const user = await this.userRepository.getById(userId); //sequelize object
@@ -77,7 +61,6 @@ class UserService {
             //match refresh token
             const hashedRefreshToken = this.hashToken(refreshToken);
             //search in db if it is abilable or not ?
-            // console.log("hashedRefreshToken :" ,hashedRefreshToken );
             const res = await this.tokenRepository.getByToken(hashedRefreshToken);
 
             // console.log(res.dataValues);
@@ -125,7 +108,6 @@ class UserService {
 
             const accessToken = this.createAccessToken(user);
             const refreshToken = await this.createRefreshToken(user);
-
             //TODO : use rate-limiter and limit one user can only login for 3 diffrent sessions.
 
             return {
@@ -142,7 +124,6 @@ class UserService {
 
     async updatePassword(userId, oldPassword, newPassword){
         try {
-
             //get the user
             // console.log(userId);
             const user  = await this.userRepository.getById(userId); //sequelize object
@@ -152,7 +133,7 @@ class UserService {
             if(!isMatch) throw {error: "OLD PASSWORD NOT MATCHED"};
 
             //logging out all session while password change for security
-            userId.tokenVersion +=1;
+            user.tokenVersion +=1;
             await this.tokenRepository.deleteById(userId); //also delete it from user frontend
             
             //encrypting password before update 
@@ -212,9 +193,7 @@ class UserService {
    
     async logout(refreshToken){
         try {
-            //check the refresh token
-            await this.verifyRefreshToken(refreshToken); //await to hold and check the token
-
+            // refresh token is already verified in middleware
             const hashedToken = this.hashToken(refreshToken);
 
             //then delete the token from db
@@ -305,9 +284,7 @@ class UserService {
     }
     async deleteAccount(id,refreshToken){
         try {
-            //check the refresh token
-            await this.verifyRefreshToken(refreshToken); //await to hold and check the token
-
+            // refresh token is already verified in middleware
             const hashedToken = this.hashToken(refreshToken);
 
             //then delete the token from db
