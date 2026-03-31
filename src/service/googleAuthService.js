@@ -39,8 +39,8 @@ class GoogleAuthService {
 
             // console.log(user.id);
 
-            const accessToken = userService.createAccessToken(user);
-            const refreshToken = await userService.createRefreshToken(user);
+            const refreshToken = userService.createRefreshToken(user);
+            const accessToken = userService.createAccessToken(user , refreshToken);
 
             return {
                 user,

@@ -13,19 +13,17 @@ const isAuthenticated = async (req,res,next) => {
         const accessToken = req.headers['x-access-token'];
         if(!accessToken) return  res.status(401).json({message: "no access token" });
         
-        // console.log("haiii-------");
         const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
-        const user = await userRepository.getById(decoded.id);
-        
-        
-        if (decoded.tokenVersion !== user.tokenVersion) {
+        console.log("haiii-------",decoded);
+        const session = await tokenRepository.findBySessionId(decoded.sessionId);
+        if(!session) {
             return res.status(401).json({
-                message: "Token expired (version mismatch)"
+                message: "session expired (version mismatch)"
             });
         }
         req.user = {
-            id: user.id,
-            role: user.role
+            id: decoded.id,
+            role: decoded.role
         };
        
         next();

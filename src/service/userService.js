@@ -26,9 +26,12 @@ class UserService {
         }
     }
 
-    createAccessToken(user) {
+    createAccessToken(user , refreshToken) {
         try {
-            const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, role:user.role},JWT_ACCESS_KEY,{expiresIn: ACCESS_KEY_EXPIRY});
+
+            const decoded = jwt.verify(refreshToken , JWT_REFRESH_KEY);
+            console.log(decoded);
+            const token = jwt.sign({id:user.id, sessionId:decoded.sessionId , role:user.role},JWT_ACCESS_KEY,{expiresIn: ACCESS_KEY_EXPIRY});
             return token;
         } catch (error) {
             throw error;
@@ -66,7 +69,10 @@ class UserService {
             // console.log(res.dataValues);
             if(!res) return new Error("Sign in required!");
 
-            const newAccessToken = this.createAccessToken(user.dataValues);
+            // console.log(res.sessionId);
+            // console.log(user);
+
+            const newAccessToken = this.createAccessToken(user , refreshToken);
 
             // console.log(newAccessToken);
             return {
@@ -106,8 +112,8 @@ class UserService {
             const isMatch = this.comparePassword(plainPassword,user.password);
             if(!isMatch) throw {error:"Password Not Matched"};
 
-            const accessToken = this.createAccessToken(user);
             const refreshToken = await this.createRefreshToken(user);
+            const accessToken = this.createAccessToken(user , refreshToken);
             //TODO : use rate-limiter and limit one user can only login for 3 diffrent sessions.
 
             return {
