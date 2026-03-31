@@ -16,4 +16,6 @@ module.exports = {
     ACCESS_KEY_EXPIRY:process.env.ACCESS_KEY_EXPIRY,
     SESSIONS_ALLOWED:process.env.SESSIONS_ALLOWED,
     REQUEST_LIMIT:process.env.REQUEST_LIMIT,
+    EMAIL_PASS:process.env.EMAIL_PASS,
+    EMAIL_USER:process.env.EMAIL_USER,
 }
