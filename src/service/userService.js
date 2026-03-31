@@ -3,7 +3,7 @@ const TokenRepository = require('../repository/tokenRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY} = require('../config/serverConfig');
+const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY,SESSIONS_ALLOWED} = require('../config/serverConfig');
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -114,8 +114,9 @@ class UserService {
 
             console.log("--------- : ", noOfSessions);
 
-            if(noOfSessions>=3) {
+            if(noOfSessions>=SESSIONS_ALLOWED) {
                 await this.tokenRepository.deleteOldestSession(user.id);
+                //TODO : Delete specific session chossen by user (like hotstar)
             }
 
             const refreshToken = await this.createRefreshToken(user);
