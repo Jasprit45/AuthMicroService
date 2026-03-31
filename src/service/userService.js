@@ -106,6 +106,11 @@ class UserService {
         try {
             const user = await this.userRepository.getByEmail(email);  
             if(!user) throw {error: "User not found"};
+            if(user.googleId || user.githubId) {  //for temp user that are already logged in
+                user.isVerified = true;
+                await user.save();
+            }
+            if(!user.isVerified) throw {error: "User is not verified (verify your email)"};
 
             const isMatch = this.comparePassword(plainPassword,user.password);
             if(!isMatch) throw {error:"Password Not Matched"};

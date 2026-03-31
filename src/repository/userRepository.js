@@ -20,6 +20,8 @@ class UserRepository {
     }
     async createOAuthUser(data){
         try {
+            data.isVerified = true;
+            data.tokenVersion = 0;
             const user = await User.create(data);
             return {
                 id: user.id,

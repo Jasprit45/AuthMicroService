@@ -6,7 +6,6 @@ const {GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET} = require('../config/serverConfig'
 
 const userService = new UserService();
 const userRepository = new UserRepository();
-const tokenRepository = new TokenRepository();
 
 
 class GithubAuthService {
