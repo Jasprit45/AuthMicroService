@@ -14,7 +14,7 @@ const isAuthenticated = async (req,res,next) => {
         if(!accessToken) return  res.status(401).json({message: "no access token" });
         
         const decoded = jwt.verify(accessToken,JWT_ACCESS_KEY);
-        console.log("haiii-------",decoded);
+        // console.log("haiii-------",decoded);
         const session = await tokenRepository.findBySessionId(decoded.sessionId);
         if(!session) {
             return res.status(401).json({

@@ -56,6 +56,39 @@ class TokenRepository {
             throw error;
         }
     }
+    async countSessions(userId){
+        try {
+            const count = await Refresh_tokens.count({
+                where : {
+                    userId,
+                    expiresAt: {
+                        [Op.gt]: new Date() // only non-expired token/sessions
+                    }
+                }
+            });
+            return count;
+        } catch (error) {
+            console.log("Something went wrong in token repository");
+            console.log(error);
+            throw error;
+        }
+    }
+    async deleteOldestSession(userId) {
+        try {
+            const oldest = await Refresh_tokens.findOne({
+                where: { userId },
+                order: [['createdAt', 'ASC']]
+            });
+
+            if (oldest) {
+                await oldest.destroy();
+            }
+
+        } catch (error) {
+            console.log("Error deleting oldest session");
+            throw error;
+        }
+    }
     async deleteById(userId){
         try {
             await Refresh_tokens.destroy({

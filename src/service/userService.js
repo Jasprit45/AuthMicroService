@@ -28,9 +28,7 @@ class UserService {
 
     createAccessToken(user , refreshToken) {
         try {
-
             const decoded = jwt.verify(refreshToken , JWT_REFRESH_KEY);
-            console.log(decoded);
             const token = jwt.sign({id:user.id, sessionId:decoded.sessionId , role:user.role},JWT_ACCESS_KEY,{expiresIn: ACCESS_KEY_EXPIRY});
             return token;
         } catch (error) {
@@ -111,6 +109,14 @@ class UserService {
 
             const isMatch = this.comparePassword(plainPassword,user.password);
             if(!isMatch) throw {error:"Password Not Matched"};
+
+            const noOfSessions = await this.tokenRepository.countSessions(user.id);
+
+            console.log("--------- : ", noOfSessions);
+
+            if(noOfSessions>=3) {
+                await this.tokenRepository.deleteOldestSession(user.id);
+            }
 
             const refreshToken = await this.createRefreshToken(user);
             const accessToken = this.createAccessToken(user , refreshToken);
