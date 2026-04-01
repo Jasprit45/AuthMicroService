@@ -18,4 +18,6 @@ module.exports = {
     REQUEST_LIMIT:process.env.REQUEST_LIMIT,
     EMAIL_PASS:process.env.EMAIL_PASS,
     EMAIL_USER:process.env.EMAIL_USER,
+    EMAIL_FROM:process.env.EMAIL_FROM,
+    CLIENT_URL:process.env.CLIENT_URL,
 }

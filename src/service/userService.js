@@ -3,9 +3,11 @@ const TokenRepository = require('../repository/tokenRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY,SESSIONS_ALLOWED} = require('../config/serverConfig');
+const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY,SESSIONS_ALLOWED,CLIENT_URL} = require('../config/serverConfig');
 const { v4: uuidv4 } = require('uuid');
-
+const {generateVerificationToken} = require('../utils/emailVerification/verificationToken');
+const EmailTokenRepository  = require('../repository/emailTokenRepository');
+const {sendVerificationEmail}  = require('./emailService');
 
 
 class UserService {
@@ -13,15 +15,31 @@ class UserService {
     constructor() {
         this.userRepository = new UserRepository();
         this.tokenRepository = new TokenRepository();
+        this.emailTokenRepository = new EmailTokenRepository();
     }
 
     async signUp(data) {
         try {
-            data.role = 'USER';  //can't login with admin and manager
-            const user = await this.userRepository.create(data);
+            const user = await this.userRepository.create({...data,role: 'USER',isVerified:false});
+
+            const { rawToken, hashedToken } = generateVerificationToken();
+
+            await this.emailTokenRepository.create({
+                userId: user.id,
+                token: hashedToken,
+            });
+
+            const verificationLink = `${CLIENT_URL}/api/v1/auth/verify-email?token=${rawToken}`;
+
+            await sendVerificationEmail(
+                "mymail@gmail.com",
+                "http://localhost:3001/api/v1/auth/verify-mymail1803@gmail.com?token=abc123"
+            );
+
+
             return user;
         } catch (error) {
-            console.log("Something went wrong in user service layer");
+            console.log("Something went wrong in user service layer",error);
             throw error;
         }
     }
