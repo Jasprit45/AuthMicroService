@@ -12,7 +12,15 @@ const generateVerificationToken = () => {
         hashedToken   
     };
 };
+const hashVerificationToken = (token) => {
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+    return hashedToken;
+};
 
 module.exports = {
-    generateVerificationToken
+    generateVerificationToken,
+    hashVerificationToken
 };

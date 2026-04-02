@@ -5,13 +5,13 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRESH_KEY_EXPIRY,SESSIONS_ALLOWED,CLIENT_URL} = require('../config/serverConfig');
 const { v4: uuidv4 } = require('uuid');
-const {generateVerificationToken} = require('../utils/emailVerification/verificationToken');
+const {generateVerificationToken , hashVerificationToken} = require('../utils/emailVerification/verificationToken');
 const EmailTokenRepository  = require('../repository/emailTokenRepository');
 const {sendVerificationEmail}  = require('./emailService');
 
 
 class UserService {
-    
+
     constructor() {
         this.userRepository = new UserRepository();
         this.tokenRepository = new TokenRepository();
@@ -31,11 +31,7 @@ class UserService {
 
             const verificationLink = `${CLIENT_URL}/api/v1/auth/verify-email?token=${rawToken}`;
 
-            await sendVerificationEmail(
-                "mymail@gmail.com",
-                "http://localhost:3001/api/v1/auth/verify-mymail1803@gmail.com?token=abc123"
-            );
-
+            await sendVerificationEmail( data.email, verificationLink);
 
             return user;
         } catch (error) {
@@ -43,6 +39,31 @@ class UserService {
             throw error;
         }
     }
+    async verifyEmail(rawToken) {
+        try {
+            const hashedToken = hashVerificationToken(rawToken);
+
+            const userToken = await this.emailTokenRepository.getByToken(hashedToken);
+            if(!userToken) throw new Error("User not found");
+            if(userToken.expiresAt < new Date()) throw new Error("Token Expired");
+
+            const user = await this.userRepository.getById(userToken.userId);
+            if (!user) throw new Error("User not found");
+        
+            user.isVerified = true;
+            await user.save();
+
+            await this.emailTokenRepository.delete(userToken.id);
+            
+            return {message: "Email verified succesfully"};
+
+        } catch (error) {
+            console.log("Something went wrong in user service layer",error);
+            throw error;
+        }
+    }
+
+    
 
     createAccessToken(user , refreshToken) {
         try {

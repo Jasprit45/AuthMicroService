@@ -12,9 +12,21 @@ class EmailTokenRepository {
             throw error;
         }
     }
+    async getByToken(token) {
+        try {
+            const res = await email_tokens.findOne({where:{
+                token
+            }});
+            return res;
+        } catch (error) {
+            console.log("Something went wrong in token repository");
+            console.log(error);
+            throw error;
+        }
+    }
     async delete(id){
         try {
-            const res = await email_tokens.delete({where:{
+            const res = await email_tokens.destroy({where:{
                 id
             }});
             return true;

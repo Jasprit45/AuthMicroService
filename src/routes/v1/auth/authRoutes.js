@@ -13,6 +13,10 @@ router.post('/signup',
     userController.signUp
 );
 
+router.get('/verify-email',
+    userController.verifyEmail
+)
+
 router.get('/login',
     AuthRequestValidators.validateSignin,
     userController.signIn
@@ -32,6 +36,8 @@ router.get('/logout-all',
     TokenAuth.isAuthenticated,
     userController.logoutAll
 );
+
+
 
 // OAuth
 router.use('/google', googleRoutes);
