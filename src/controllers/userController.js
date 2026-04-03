@@ -47,6 +47,27 @@ const verifyEmail = async (req,res) => {
         });
     }
 }
+const reVerification = async (req,res) => {
+    try {
+        const user = await userService.reVerification(req.body.email);
+        console.log("USER VERIFIED : ",user);
+        return res.status(201).json({
+            success: true,
+            message:"User email verified",
+            data: user,
+            error: {}
+        });
+        
+    } catch (error) {
+        console.log("Something went wrong in user controller layer");
+        return res.status(500).json({
+            success: false,
+            message:"User email not verified",
+            data: {},
+            error: error
+        });
+    }
+}
 
 const signIn = async (req,res) => {
     try {
@@ -329,5 +350,6 @@ module.exports = {
     getMyProfile,
     updateMyProfile,
     deleteMyAccount,
-    verifyEmail
+    verifyEmail,
+    reVerification,
 }

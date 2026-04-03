@@ -54,18 +54,22 @@ class GithubAuthService {
                 user = await userRepository.createOAuthUser({
                     email: primaryEmail,
                     name,
-                    googleId: null,
+                    githubId,
                     provider: 'GITHUB',
                     password: null
                 });
             }
+
+            user.githubId = githubId;
+           
+
+            user.save();
 
             // 4. Tokens
             const jwtRefresh = await userService.createRefreshToken(user);
             const jwtAccess = userService.createAccessToken(user , jwtRefresh);
 
             return {
-                user,
                 accessToken: jwtAccess,
                 refreshToken: jwtRefresh
             };

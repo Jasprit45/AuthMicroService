@@ -37,13 +37,15 @@ class GoogleAuthService {
             user.googleId = googleId;
             user.provider = 'GOOGLE';
 
-            // console.log(user.id);
-
-            const refreshToken = userService.createRefreshToken(user);
+            
+            // console.log(user);
+            
+            const refreshToken = await userService.createRefreshToken(user);
+           
             const accessToken = userService.createAccessToken(user , refreshToken);
+            user.save();
 
             return {
-                user,
                 accessToken,
                 refreshToken
             }

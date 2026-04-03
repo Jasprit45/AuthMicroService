@@ -15,7 +15,12 @@ router.post('/signup',
 
 router.get('/verify-email',
     userController.verifyEmail
-)
+);
+
+router.post('/resend-verification',
+    userController.reVerification
+);
+
 
 router.get('/login',
     AuthRequestValidators.validateSignin,

@@ -39,6 +39,32 @@ class UserService {
             throw error;
         }
     }
+    async reVerification(email) {
+        try {
+            
+            const user = await this.userRepository.getByEmail(email);
+            if(!user) return new Error("User not found");
+            if(user.isVerified) return {message: "User Already Verified"};
+
+            await this.emailTokenRepository.delete(user.id);
+
+            const { rawToken, hashedToken } = generateVerificationToken();
+
+            await this.emailTokenRepository.create({
+                userId: user.id,
+                token: hashedToken,
+            });
+
+            const verificationLink = `${CLIENT_URL}/api/v1/auth/verify-email?token=${rawToken}`;
+
+            await sendVerificationEmail( email, verificationLink);
+
+            return {message: "Email verified succesfully"};
+        } catch (error) {
+            console.log("Something went wrong in user service layer",error);
+            throw error;
+        }
+    }
     async verifyEmail(rawToken) {
         try {
             const hashedToken = hashVerificationToken(rawToken);
@@ -80,13 +106,11 @@ class UserService {
            
             const token = jwt.sign({id:user.id, tokenVersion:user.tokenVersion, sessionId:sessionId},JWT_REFRESH_KEY,{expiresIn: REFRESH_KEY_EXPIRY});
             const hashedToken = this.hashToken(token);
-
             await this.tokenRepository.create({
                 userId : user.id,
                 token : hashedToken,
                 sessionId:sessionId
             });
-
             return token;
         } catch (error) {
             throw error;
