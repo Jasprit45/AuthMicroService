@@ -42,6 +42,13 @@ router.get('/logout-all',
     userController.logoutAll
 );
 
+router.post('/forgot-password',
+    userController.forgotPassword
+);
+
+router.post('/reset-password',
+    userController.resetPassword
+);
 
 
 // OAuth

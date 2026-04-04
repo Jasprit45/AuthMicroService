@@ -1,6 +1,6 @@
 const sender = require('../config/emailConfig');
 const {EMAIL_FROM} = require('../config/serverConfig')
-const { verificationEmailTemplate } = require('../utils/emailVerification/verificationEmailTemplate');
+const { verificationEmailTemplate } = require('../utils/emailVerification/emailTemplate');
 
 sender.verify((error, success) => {
     if (error) {

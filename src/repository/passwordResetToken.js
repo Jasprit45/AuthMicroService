@@ -1,10 +1,10 @@
-const {email_tokens}  = require('../models/index');
+const {password_reset_token}  = require('../models/index');
 
-class EmailTokenRepository {
+class PasswordResetToken {
     async create(data){
         try {
             data.expiresAt = new Date(Date.now() + 10*60*1000);
-            const res = await email_tokens.create(data);
+            const res = await password_reset_token.create(data);
             return res;
         } catch (error) {
             console.log("Something went wrong in token repository");
@@ -12,10 +12,10 @@ class EmailTokenRepository {
             throw error;
         }
     }
-    async getByToken(token) {
+    async get(attribute) {
         try {
-            const res = await email_tokens.findOne({where:{
-                token
+            const res = await password_reset_token.findOne({where:{
+                attribute
             }});
             return res;
         } catch (error) {
@@ -26,8 +26,20 @@ class EmailTokenRepository {
     }
     async delete(id){
         try {
-            await email_tokens.destroy({where:{
+            await password_reset_token.destroy({where:{
                 id
+            }});
+            return true;
+        } catch (error) {
+            console.log("Something went wrong in token repository");
+            console.log(error);
+            throw error;
+        }
+    }
+    async deleteByUserId(userId){
+        try {
+            await password_reset_token.destroy({where:{
+                userId
             }});
             return true;
         } catch (error) {
@@ -38,4 +50,4 @@ class EmailTokenRepository {
     }
 }
 
-module.exports = EmailTokenRepository;
+module.exports = PasswordResetToken;

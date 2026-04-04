@@ -7,7 +7,9 @@ const {JWT_ACCESS_KEY,SALT,JWT_REFRESH_KEY,TOKEN_SECRET,ACCESS_KEY_EXPIRY,REFRES
 const { v4: uuidv4 } = require('uuid');
 const {generateVerificationToken , hashVerificationToken} = require('../utils/emailVerification/verificationToken');
 const EmailTokenRepository  = require('../repository/emailTokenRepository');
-const {sendVerificationEmail}  = require('./emailService');
+const {sendVerificationEmail ,sendEmail}  = require('./emailService');
+const PasswordResetToken = require('../repository/passwordResetToken');
+const {passwordResetTemplate} = require('../utils/emailVerification/emailTemplate')
 
 
 class UserService {
@@ -16,6 +18,7 @@ class UserService {
         this.userRepository = new UserRepository();
         this.tokenRepository = new TokenRepository();
         this.emailTokenRepository = new EmailTokenRepository();
+        this.passwordResetToken = new PasswordResetToken();
     }
 
     async signUp(data) {
@@ -85,6 +88,58 @@ class UserService {
 
         } catch (error) {
             console.log("Something went wrong in user service layer",error);
+            throw error;
+        }
+    }
+    async resetPassword({rawToken,newPassword}) {
+        try {
+            const hashedToken = hashVerificationToken(rawToken);
+
+            const userToken = await this.passwordResetToken.get(hashedToken);
+            if(!userToken) throw new Error("User not found");
+            if(userToken.expiresAt < new Date()) throw new Error("Token Expired");
+
+            const user = await this.userRepository.getById(userToken.userId);
+            if (!user) throw new Error("User not found");
+        
+            user.password = newPassword;
+            await user.save();
+
+            await this.passwordResetToken.delete(userToken.id);
+            
+            return {message: "Password Reset succesfully"};
+
+        } catch (error) {
+            console.log("Something went wrong in user service layer",error);
+            throw error;
+        }
+    }
+
+    async forgetPassword({email}){
+        try {
+            const user = await this.userRepository.getByEmail(email);
+            if(!user) return new Error("User not found");
+
+            await this.passwordResetToken.deleteByUserId(user.id);
+            const { rawToken, hashedToken } = generateVerificationToken();
+
+            await this.passwordResetToken.create({
+                userId: user.id,
+                token: hashedToken,
+            });
+
+            const verificationLink = `${CLIENT_URL}/api/v1/auth/reset-password?token=${rawToken}`;
+
+            await sendEmail({
+                to: email,
+                subject: "Reset-Password",
+                html: passwordResetTemplate(verificationLink)
+            });
+
+            return {message: "Email verified succesfully"};
+            
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
             throw error;
         }
     }
@@ -380,6 +435,9 @@ class UserService {
             throw error;
         }
     }
+    
+
+    
 }
 
 module.exports = UserService;

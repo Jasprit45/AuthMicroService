@@ -74,10 +74,17 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   //tiggers
-  User.beforeCreate((user)=>{
+  User.beforeCreate(async (user)=>{
     if(user.password) {
-      const encryptedPassword = bcrypt.hashSync(user.password,SALT);
+      const encryptedPassword = await bcrypt.hashSync(user.password,SALT);
       user.password  = encryptedPassword;
+    }
+  });
+
+  User.beforeUpdate(async (user) => {
+    if (user.changed('password')) {
+        const encryptedPassword = await bcrypt.hashSync(user.password, SALT);
+        user.password = encryptedPassword;
     }
   });
 

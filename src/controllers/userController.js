@@ -69,6 +69,42 @@ const reVerification = async (req,res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    try {
+        const response = await userService.forgetPassword(req.body);
+
+        return res.status(200).json({
+            success: true,
+            message: response.message
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error
+        });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.query;
+        const { newPassword } = req.body;
+        const response = await userService.resetPassword({token, newPassword });
+
+        return res.status(200).json({
+            success: true,
+            message: response.message
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error
+        });
+    }
+};
+
 const signIn = async (req,res) => {
     try {
         const token = await userService.signIn(req.body.email,req.body.password);
@@ -352,4 +388,6 @@ module.exports = {
     deleteMyAccount,
     verifyEmail,
     reVerification,
+    forgotPassword,
+    resetPassword
 }
