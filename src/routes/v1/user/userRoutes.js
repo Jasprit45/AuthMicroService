@@ -22,7 +22,7 @@ router.use('/me',
     profileRoutes
 );
 
-router.get('/',
+router.get('/all',
     TokenAuth.isAuthenticated,
     TokenAuth.isManagerOrAdmin,
     userController.getAllUsers

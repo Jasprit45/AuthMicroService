@@ -23,6 +23,10 @@ class UserService {
 
     async signUp(data) {
         try {
+
+            const res = await this.userRepository.getByEmail(data.email);
+            if(res) return new Error("User already exists");
+
             const user = await this.userRepository.create({...data,role: 'USER',isVerified:false});
 
             const { rawToken, hashedToken } = generateVerificationToken();

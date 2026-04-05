@@ -63,7 +63,7 @@ class GithubAuthService {
             user.githubId = githubId;
            
 
-            user.save();
+            await user.save();
 
             // 4. Tokens
             const jwtRefresh = await userService.createRefreshToken(user);
