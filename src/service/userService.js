@@ -422,6 +422,20 @@ class UserService {
             throw error;
         }
     }
+    async setPassword(id, newPassword){
+        try {
+            const user = await this.userRepository.getById(id);
+            if(user.password) return new Error("PASSWORD_ALREADY_EXIST!!");
+            user.password = newPassword;
+            await user.save();
+            return {
+                message: "Password set succesfully"
+            };
+        } catch (error) {
+            console.log("Something went wrong in user service layer", error);
+            throw error;
+        }
+    }
     async deleteAccount(id,refreshToken){
         try {
             // refresh token is already verified in middleware

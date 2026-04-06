@@ -367,6 +367,22 @@ const deleteMyAccount = async (req,res) => {
         });
     }
 }
+const setPassword = async (req,res) => {
+    try {
+        const user = await userService.setPassword(req.user.id, req.body.password);
+        return res.status(200).json({
+            success: true,
+            message:"Password Updated",
+        });
+    } catch (error) {
+        console.log("Something went wrong in user controller layer",error);
+        return res.status(500).json({
+            success: false,
+            message:"Something went wrong",
+            error: error,
+        });
+    }
+}
 
 
 
@@ -389,5 +405,6 @@ module.exports = {
     verifyEmail,
     reVerification,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    setPassword
 }

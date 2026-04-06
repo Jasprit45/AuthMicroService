@@ -17,6 +17,25 @@ const validateSignup = (req,res,next) => {
     }
     next();
 }
+const validatePassword = (req,res,next) => {
+    if( !req.body.password){
+        return res.status(400).json({
+            success: false,
+            data : {},
+            message: "missing inputs",
+            error: "new Password is missing"
+        });
+    }
+    if(req.body.password.length < 6){
+        return res.status(400).json({
+            success: false,
+            data : {},
+            message: "password length should be at least of 6",
+            error: "Password length is less than 6"
+        });
+    }
+    next();
+}
 const validateSignin = (req,res,next) => {
     if(!req.body.email || !req.body.password){
         return res.status(400).json({
@@ -67,5 +86,6 @@ module.exports = {
     validateSignin,
     validateSignup,
     validatePasswordChange,
-    validateRoleChange
+    validateRoleChange,
+    validatePassword
 }

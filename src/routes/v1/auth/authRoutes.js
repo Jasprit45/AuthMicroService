@@ -45,6 +45,11 @@ router.get('/logout-all',
 router.post('/forgot-password',
     userController.forgotPassword
 );
+router.post('/set-password',
+    TokenAuth.isAuthenticated,
+    AuthRequestValidators.validatePassword,
+    userController.setPassword
+);
 
 router.post('/reset-password',
     userController.resetPassword
